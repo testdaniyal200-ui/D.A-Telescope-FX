@@ -1,0 +1,16 @@
+{
+  "index": 2,
+  "name": "Nebula Bloom",
+  "mode": "Telescope",
+  "zoom": 76,
+  "spread": 49,
+  "distance": 69,
+  "motion": 33,
+  "mix": 58,
+  "feedback": 43,
+  "tone": 75,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 47,
+  "name": "Dimension Phase",
+  "mode": "Atmosphere",
+  "zoom": 39,
+  "spread": 100,
+  "distance": 63,
+  "motion": 66,
+  "mix": 53,
+  "feedback": 24,
+  "tone": 59,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

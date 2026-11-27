@@ -1,0 +1,16 @@
+{
+  "index": 99,
+  "name": "Cinema Finale",
+  "mode": "Orbit",
+  "zoom": 94,
+  "spread": 100,
+  "distance": 98,
+  "motion": 50,
+  "mix": 82,
+  "feedback": 60,
+  "tone": 60,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

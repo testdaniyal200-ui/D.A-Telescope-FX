@@ -1,0 +1,16 @@
+{
+  "index": 51,
+  "name": "Atmosphere Dusk",
+  "mode": "Atmosphere",
+  "zoom": 47,
+  "spread": 67,
+  "distance": 87,
+  "motion": 8,
+  "mix": 61,
+  "feedback": 37,
+  "tone": 44,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

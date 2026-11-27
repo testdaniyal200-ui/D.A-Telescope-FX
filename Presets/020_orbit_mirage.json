@@ -1,0 +1,16 @@
+{
+  "index": 19,
+  "name": "Orbit Mirage",
+  "mode": "Dimension",
+  "zoom": 68,
+  "spread": 82,
+  "distance": 58,
+  "motion": 84,
+  "mix": 58,
+  "feedback": 48,
+  "tone": 50,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

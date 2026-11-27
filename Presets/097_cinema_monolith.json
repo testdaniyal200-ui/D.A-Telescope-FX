@@ -1,0 +1,16 @@
+{
+  "index": 96,
+  "name": "Cinema Monolith",
+  "mode": "Telescope",
+  "zoom": 96,
+  "spread": 95,
+  "distance": 77,
+  "motion": 51,
+  "mix": 70,
+  "feedback": 85,
+  "tone": 60,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 34,
+  "name": "Deep Space Long Echo",
+  "mode": "Atmosphere",
+  "zoom": 61,
+  "spread": 80,
+  "distance": 100,
+  "motion": 2,
+  "mix": 43,
+  "feedback": 80,
+  "tone": 27,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

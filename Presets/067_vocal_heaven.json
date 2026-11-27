@@ -1,0 +1,16 @@
+{
+  "index": 66,
+  "name": "Vocal Heaven",
+  "mode": "Orbit",
+  "zoom": 17,
+  "spread": 45,
+  "distance": 60,
+  "motion": 15,
+  "mix": 39,
+  "feedback": 22,
+  "tone": 69,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

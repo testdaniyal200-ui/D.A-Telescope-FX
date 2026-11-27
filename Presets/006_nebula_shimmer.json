@@ -1,0 +1,16 @@
+{
+  "index": 5,
+  "name": "Nebula Shimmer",
+  "mode": "Orbit",
+  "zoom": 58,
+  "spread": 56,
+  "distance": 83,
+  "motion": 30,
+  "mix": 57,
+  "feedback": 31,
+  "tone": 63,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 59,
+  "name": "Atmosphere Starlight",
+  "mode": "Orbit",
+  "zoom": 46,
+  "spread": 68,
+  "distance": 90,
+  "motion": 20,
+  "mix": 56,
+  "feedback": 54,
+  "tone": 58,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 77,
+  "name": "Rhythm Scattering",
+  "mode": "Dimension",
+  "zoom": 51,
+  "spread": 51,
+  "distance": 48,
+  "motion": 81,
+  "mix": 35,
+  "feedback": 24,
+  "tone": 76,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

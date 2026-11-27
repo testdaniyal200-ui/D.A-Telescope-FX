@@ -1,0 +1,16 @@
+{
+  "index": 1,
+  "name": "Nebula Chamber",
+  "mode": "Telescope",
+  "zoom": 57,
+  "spread": 59,
+  "distance": 70,
+  "motion": 27,
+  "mix": 51,
+  "feedback": 19,
+  "tone": 60,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

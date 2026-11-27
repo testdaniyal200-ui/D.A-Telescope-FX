@@ -1,0 +1,16 @@
+{
+  "index": 63,
+  "name": "Vocal Choir",
+  "mode": "Telescope",
+  "zoom": 37,
+  "spread": 62,
+  "distance": 57,
+  "motion": 15,
+  "mix": 9,
+  "feedback": 33,
+  "tone": 71,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

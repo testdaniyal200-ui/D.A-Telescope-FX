@@ -1,0 +1,16 @@
+{
+  "index": 93,
+  "name": "Cinema Gravity",
+  "mode": "Atmosphere",
+  "zoom": 77,
+  "spread": 92,
+  "distance": 97,
+  "motion": 62,
+  "mix": 62,
+  "feedback": 69,
+  "tone": 67,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

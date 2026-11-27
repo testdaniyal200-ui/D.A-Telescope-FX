@@ -1,0 +1,16 @@
+{
+  "index": 89,
+  "name": "Guitar Twilight",
+  "mode": "Orbit",
+  "zoom": 50,
+  "spread": 86,
+  "distance": 56,
+  "motion": 34,
+  "mix": 56,
+  "feedback": 34,
+  "tone": 60,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

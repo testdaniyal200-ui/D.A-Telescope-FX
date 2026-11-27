@@ -1,0 +1,16 @@
+{
+  "index": 56,
+  "name": "Atmosphere Airfield",
+  "mode": "Telescope",
+  "zoom": 35,
+  "spread": 67,
+  "distance": 87,
+  "motion": 26,
+  "mix": 72,
+  "feedback": 49,
+  "tone": 43,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

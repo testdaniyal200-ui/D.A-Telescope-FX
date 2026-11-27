@@ -1,0 +1,16 @@
+{
+  "index": 67,
+  "name": "Vocal Halo",
+  "mode": "Orbit",
+  "zoom": 18,
+  "spread": 67,
+  "distance": 46,
+  "motion": 10,
+  "mix": 37,
+  "feedback": 22,
+  "tone": 95,
+  "zoomProfile": "Close",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

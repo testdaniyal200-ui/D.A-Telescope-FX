@@ -1,0 +1,16 @@
+{
+  "index": 61,
+  "name": "Vocal Air",
+  "mode": "Telescope",
+  "zoom": 30,
+  "spread": 42,
+  "distance": 65,
+  "motion": 6,
+  "mix": 35,
+  "feedback": 9,
+  "tone": 74,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

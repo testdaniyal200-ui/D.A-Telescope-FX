@@ -1,0 +1,16 @@
+{
+  "index": 98,
+  "name": "Cinema Abyss",
+  "mode": "Orbit",
+  "zoom": 74,
+  "spread": 100,
+  "distance": 83,
+  "motion": 61,
+  "mix": 54,
+  "feedback": 68,
+  "tone": 69,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

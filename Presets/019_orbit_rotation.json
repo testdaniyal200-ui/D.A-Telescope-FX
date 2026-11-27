@@ -1,0 +1,16 @@
+{
+  "index": 18,
+  "name": "Orbit Rotation",
+  "mode": "Dimension",
+  "zoom": 64,
+  "spread": 99,
+  "distance": 47,
+  "motion": 68,
+  "mix": 50,
+  "feedback": 25,
+  "tone": 72,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 55,
+  "name": "Atmosphere Dawn",
+  "mode": "Telescope",
+  "zoom": 43,
+  "spread": 61,
+  "distance": 83,
+  "motion": 11,
+  "mix": 51,
+  "feedback": 47,
+  "tone": 49,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

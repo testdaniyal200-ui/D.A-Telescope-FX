@@ -1,0 +1,16 @@
+{
+  "index": 54,
+  "name": "Atmosphere Snowfall",
+  "mode": "Telescope",
+  "zoom": 53,
+  "spread": 87,
+  "distance": 80,
+  "motion": 32,
+  "mix": 50,
+  "feedback": 40,
+  "tone": 49,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

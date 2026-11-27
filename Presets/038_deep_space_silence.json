@@ -1,0 +1,16 @@
+{
+  "index": 37,
+  "name": "Deep Space Silence",
+  "mode": "Atmosphere",
+  "zoom": 73,
+  "spread": 100,
+  "distance": 79,
+  "motion": 33,
+  "mix": 48,
+  "feedback": 76,
+  "tone": 39,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 4,
+  "name": "Nebula Halo",
+  "mode": "Orbit",
+  "zoom": 60,
+  "spread": 46,
+  "distance": 76,
+  "motion": 27,
+  "mix": 41,
+  "feedback": 27,
+  "tone": 65,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

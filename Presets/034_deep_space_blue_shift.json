@@ -1,0 +1,16 @@
+{
+  "index": 33,
+  "name": "Deep Space Blue Shift",
+  "mode": "Dimension",
+  "zoom": 62,
+  "spread": 90,
+  "distance": 97,
+  "motion": 1,
+  "mix": 54,
+  "feedback": 62,
+  "tone": 40,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 45,
+  "name": "Dimension Parallax",
+  "mode": "Atmosphere",
+  "zoom": 57,
+  "spread": 97,
+  "distance": 43,
+  "motion": 44,
+  "mix": 41,
+  "feedback": 26,
+  "tone": 85,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

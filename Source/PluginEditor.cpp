@@ -6,6 +6,10 @@ namespace
 {
 constexpr float baseWidth = 1440.0f;
 constexpr float baseHeight = 810.0f;
+// Central galaxy HUD geometry (base-resolution coordinates), used as a large draggable zoom knob.
+constexpr float centralKnobX = 720.5f;
+constexpr float centralKnobY = 449.5f;
+constexpr float centralKnobRadius = 235.0f;
 const juce::Colour ivory (0xffeee8ff);
 const juce::Colour muted (0xffbbb1d6);
 const juce::Colour neon (0xffb683ff);
@@ -43,7 +47,9 @@ void NeonKnob::paint (juce::Graphics& g)
     g.setColour (neon);
     g.strokePath (progress, juce::PathStrokeType (1.7f));
     const float markerRadius = radius * 0.71f;
-    const auto dx = std::sin (finalAngle), dy = -std::cos (finalAngle);
+    // Point exactly along the arc-end radial, using the same angle convention as addCentredArc:
+    // angle 0 points east and positive angles rotate clockwise on screen (y-down).
+    const auto dx = std::cos (finalAngle), dy = std::sin (finalAngle);
     g.setColour (juce::Colours::white.withAlpha (0.9f));
     g.drawLine (center.x + dx * (markerRadius - 7.0f), center.y + dy * (markerRadius - 7.0f),
                 center.x + dx * (markerRadius + 5.0f), center.y + dy * (markerRadius + 5.0f), 2.0f);
@@ -290,6 +296,23 @@ void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
     paintText (g, "A   H I G H E R   P E R S P E C T I V E", 1097, 771, 277, 17, 10, muted);
 }
 
+bool DATelescopeAudioProcessorEditor::isCentralKnobHit (float x, float y) const
+{
+    const auto dx = x - centralKnobX;
+    const auto dy = y - centralKnobY;
+    return dx * dx + dy * dy <= centralKnobRadius * centralKnobRadius;
+}
+
+void DATelescopeAudioProcessorEditor::applyParameterValue (const char* id, float value)
+{
+    if (auto* parameter = processor.parameters.getParameter (id))
+    {
+        parameter->beginChangeGesture();
+        parameter->setValueNotifyingHost (parameter->convertTo0to1 (value));
+        parameter->endChangeGesture();
+    }
+}
+
 void DATelescopeAudioProcessorEditor::setChoice (const char* id, int index)
 {
     if (auto* parameter = processor.parameters.getParameter (id))
@@ -337,6 +360,21 @@ void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
 {
     const auto x = e.position.x * baseWidth / getWidth();
     const auto y = e.position.y * baseHeight / getHeight();
+
+    // The central galaxy HUD doubles as a large zoom knob.
+    if (isCentralKnobHit (x, y))
+    {
+        if (e.getNumberOfClicks() == 2)
+        {
+            applyParameterValue ("zoom", 72.0f); // factory default
+            return;
+        }
+        centralDragging = true;
+        centralDragStartAngle = std::atan2 (y - centralKnobY, x - centralKnobX);
+        centralDragStartValue = static_cast<float> (valueAsInt ("zoom"));
+        return;
+    }
+
     if (y > 68 && y < 107)
     {
         if (x >= 548 && x <= 595) { chooseProgram (processor.currentProgram.load() - 1); return; }
@@ -361,6 +399,27 @@ void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
     if (tryOption ("spreadProfile", 88, 514)) return;
     if (tryOption ("distanceProfile", 1220, 278)) return;
     (void) tryOption ("motionProfile", 1220, 514);
+}
+
+void DATelescopeAudioProcessorEditor::mouseDrag (const juce::MouseEvent& e)
+{
+    if (! centralDragging) return;
+
+    const auto x = e.position.x * baseWidth / getWidth();
+    const auto y = e.position.y * baseHeight / getHeight();
+    const auto angle = std::atan2 (y - centralKnobY, x - centralKnobX);
+    auto delta = angle - centralDragStartAngle;
+    while (delta > juce::MathConstants<double>::pi) delta -= juce::MathConstants<double>::twoPi;
+    while (delta < -juce::MathConstants<double>::pi) delta += juce::MathConstants<double>::twoPi;
+
+    // One full rotation around the knob sweeps the whole 0..100 zoom range.
+    const auto value = centralDragStartValue + delta / juce::MathConstants<double>::twoPi * 100.0;
+    applyParameterValue ("zoom", juce::jlimit (0.0f, 100.0f, static_cast<float> (value)));
+}
+
+void DATelescopeAudioProcessorEditor::mouseUp (const juce::MouseEvent&)
+{
+    centralDragging = false;
 }
 
 void DATelescopeAudioProcessorEditor::timerCallback()

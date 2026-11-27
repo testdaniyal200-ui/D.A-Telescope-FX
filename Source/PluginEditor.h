@@ -42,8 +42,12 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void mouseDown (const juce::MouseEvent&) override;
+    void mouseDrag (const juce::MouseEvent&) override;
+    void mouseUp (const juce::MouseEvent&) override;
 private:
     void timerCallback() override;
+    bool isCentralKnobHit (float x, float y) const;
+    void applyParameterValue (const char* id, float value);
     void chooseProgram (int index);
     void showPresetMenu();
     void setChoice (const char* id, int index);
@@ -63,5 +67,10 @@ private:
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> knobAttachments;
     DASettingsPanel settings;
     int lastProgram = -1;
+
+    // The central galaxy HUD acts as a large zoom knob: drag to adjust, double-click to reset.
+    bool centralDragging = false;
+    double centralDragStartAngle = 0.0;
+    float centralDragStartValue = 0.0f;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DATelescopeAudioProcessorEditor)
 };

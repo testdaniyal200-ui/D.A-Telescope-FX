@@ -1,0 +1,16 @@
+{
+  "index": 26,
+  "name": "Warp Vortex",
+  "mode": "Dimension",
+  "zoom": 90,
+  "spread": 65,
+  "distance": 68,
+  "motion": 78,
+  "mix": 50,
+  "feedback": 51,
+  "tone": 43,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Warp"
+}

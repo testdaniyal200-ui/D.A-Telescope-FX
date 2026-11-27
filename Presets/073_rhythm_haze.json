@@ -1,0 +1,16 @@
+{
+  "index": 72,
+  "name": "Rhythm Haze",
+  "mode": "Warp",
+  "zoom": 38,
+  "spread": 64,
+  "distance": 43,
+  "motion": 76,
+  "mix": 37,
+  "feedback": 9,
+  "tone": 70,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

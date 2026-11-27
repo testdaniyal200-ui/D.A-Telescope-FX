@@ -1,0 +1,16 @@
+{
+  "index": 40,
+  "name": "Dimension Fold",
+  "mode": "Dimension",
+  "zoom": 56,
+  "spread": 99,
+  "distance": 50,
+  "motion": 67,
+  "mix": 25,
+  "feedback": 13,
+  "tone": 62,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

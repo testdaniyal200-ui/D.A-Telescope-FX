@@ -1,0 +1,16 @@
+{
+  "index": 31,
+  "name": "Deep Space Cathedral",
+  "mode": "Dimension",
+  "zoom": 72,
+  "spread": 93,
+  "distance": 96,
+  "motion": 10,
+  "mix": 40,
+  "feedback": 51,
+  "tone": 44,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 65,
+  "name": "Vocal Skyline",
+  "mode": "Orbit",
+  "zoom": 35,
+  "spread": 55,
+  "distance": 48,
+  "motion": 17,
+  "mix": 14,
+  "feedback": 25,
+  "tone": 86,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

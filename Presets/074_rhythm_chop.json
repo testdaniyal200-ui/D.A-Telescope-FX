@@ -1,0 +1,16 @@
+{
+  "index": 73,
+  "name": "Rhythm Chop",
+  "mode": "Warp",
+  "zoom": 32,
+  "spread": 61,
+  "distance": 25,
+  "motion": 74,
+  "mix": 39,
+  "feedback": 17,
+  "tone": 81,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Near",
+  "motionProfile": "Warp"
+}

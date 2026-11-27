@@ -1,0 +1,16 @@
+{
+  "index": 88,
+  "name": "Guitar Plate",
+  "mode": "Orbit",
+  "zoom": 58,
+  "spread": 68,
+  "distance": 73,
+  "motion": 22,
+  "mix": 36,
+  "feedback": 47,
+  "tone": 55,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

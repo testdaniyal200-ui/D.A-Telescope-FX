@@ -1,0 +1,16 @@
+{
+  "index": 29,
+  "name": "Warp Transponder",
+  "mode": "Atmosphere",
+  "zoom": 96,
+  "spread": 60,
+  "distance": 62,
+  "motion": 68,
+  "mix": 58,
+  "feedback": 58,
+  "tone": 62,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

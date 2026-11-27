@@ -1,0 +1,16 @@
+{
+  "index": 69,
+  "name": "Vocal Glow",
+  "mode": "Warp",
+  "zoom": 20,
+  "spread": 54,
+  "distance": 50,
+  "motion": 24,
+  "mix": 16,
+  "feedback": 30,
+  "tone": 96,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

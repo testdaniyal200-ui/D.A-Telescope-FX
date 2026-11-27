@@ -1,0 +1,16 @@
+{
+  "index": 90,
+  "name": "Cinema Arrival",
+  "mode": "Atmosphere",
+  "zoom": 75,
+  "spread": 85,
+  "distance": 100,
+  "motion": 34,
+  "mix": 74,
+  "feedback": 54,
+  "tone": 63,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

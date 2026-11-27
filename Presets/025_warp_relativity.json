@@ -1,0 +1,16 @@
+{
+  "index": 24,
+  "name": "Warp Relativity",
+  "mode": "Dimension",
+  "zoom": 65,
+  "spread": 70,
+  "distance": 45,
+  "motion": 61,
+  "mix": 35,
+  "feedback": 52,
+  "tone": 50,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

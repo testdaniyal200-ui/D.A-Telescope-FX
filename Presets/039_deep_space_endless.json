@@ -1,0 +1,16 @@
+{
+  "index": 38,
+  "name": "Deep Space Endless",
+  "mode": "Telescope",
+  "zoom": 57,
+  "spread": 93,
+  "distance": 83,
+  "motion": 31,
+  "mix": 62,
+  "feedback": 79,
+  "tone": 44,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 68,
+  "name": "Vocal Echo",
+  "mode": "Warp",
+  "zoom": 19,
+  "spread": 53,
+  "distance": 60,
+  "motion": 18,
+  "mix": 41,
+  "feedback": 29,
+  "tone": 88,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

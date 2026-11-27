@@ -1,0 +1,16 @@
+{
+  "index": 3,
+  "name": "Nebula Whisper",
+  "mode": "Telescope",
+  "zoom": 55,
+  "spread": 55,
+  "distance": 73,
+  "motion": 35,
+  "mix": 57,
+  "feedback": 35,
+  "tone": 75,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

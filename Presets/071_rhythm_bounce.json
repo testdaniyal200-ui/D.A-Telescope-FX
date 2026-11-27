@@ -1,0 +1,16 @@
+{
+  "index": 70,
+  "name": "Rhythm Bounce",
+  "mode": "Warp",
+  "zoom": 33,
+  "spread": 52,
+  "distance": 33,
+  "motion": 66,
+  "mix": 50,
+  "feedback": 31,
+  "tone": 72,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

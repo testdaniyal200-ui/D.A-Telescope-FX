@@ -1,0 +1,16 @@
+{
+  "index": 87,
+  "name": "Guitar Echoes",
+  "mode": "Telescope",
+  "zoom": 43,
+  "spread": 57,
+  "distance": 66,
+  "motion": 23,
+  "mix": 45,
+  "feedback": 45,
+  "tone": 54,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

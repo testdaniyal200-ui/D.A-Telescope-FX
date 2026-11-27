@@ -1,0 +1,16 @@
+{
+  "index": 94,
+  "name": "Cinema Infinity",
+  "mode": "Telescope",
+  "zoom": 95,
+  "spread": 84,
+  "distance": 90,
+  "motion": 65,
+  "mix": 80,
+  "feedback": 54,
+  "tone": 46,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

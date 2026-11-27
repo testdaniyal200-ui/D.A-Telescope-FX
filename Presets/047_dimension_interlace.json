@@ -1,0 +1,16 @@
+{
+  "index": 46,
+  "name": "Dimension Interlace",
+  "mode": "Atmosphere",
+  "zoom": 57,
+  "spread": 84,
+  "distance": 61,
+  "motion": 66,
+  "mix": 39,
+  "feedback": 28,
+  "tone": 70,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

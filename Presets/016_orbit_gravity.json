@@ -1,0 +1,16 @@
+{
+  "index": 15,
+  "name": "Orbit Gravity",
+  "mode": "Warp",
+  "zoom": 65,
+  "spread": 68,
+  "distance": 56,
+  "motion": 84,
+  "mix": 46,
+  "feedback": 33,
+  "tone": 70,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

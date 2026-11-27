@@ -1,0 +1,16 @@
+{
+  "index": 7,
+  "name": "Nebula Eclipse",
+  "mode": "Orbit",
+  "zoom": 73,
+  "spread": 57,
+  "distance": 87,
+  "motion": 41,
+  "mix": 43,
+  "feedback": 26,
+  "tone": 67,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

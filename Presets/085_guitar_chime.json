@@ -1,0 +1,16 @@
+{
+  "index": 84,
+  "name": "Guitar Chime",
+  "mode": "Telescope",
+  "zoom": 42,
+  "spread": 79,
+  "distance": 65,
+  "motion": 34,
+  "mix": 51,
+  "feedback": 50,
+  "tone": 63,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

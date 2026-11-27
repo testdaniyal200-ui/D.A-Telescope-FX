@@ -1,0 +1,16 @@
+{
+  "index": 8,
+  "name": "Nebula Veil",
+  "mode": "Warp",
+  "zoom": 83,
+  "spread": 77,
+  "distance": 76,
+  "motion": 41,
+  "mix": 40,
+  "feedback": 32,
+  "tone": 62,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

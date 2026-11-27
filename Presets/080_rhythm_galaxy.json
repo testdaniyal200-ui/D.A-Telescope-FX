@@ -1,0 +1,16 @@
+{
+  "index": 79,
+  "name": "Rhythm Galaxy",
+  "mode": "Atmosphere",
+  "zoom": 34,
+  "spread": 58,
+  "distance": 26,
+  "motion": 74,
+  "mix": 44,
+  "feedback": 38,
+  "tone": 92,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Near",
+  "motionProfile": "Warp"
+}

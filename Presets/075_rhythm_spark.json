@@ -1,0 +1,16 @@
+{
+  "index": 74,
+  "name": "Rhythm Spark",
+  "mode": "Dimension",
+  "zoom": 40,
+  "spread": 50,
+  "distance": 32,
+  "motion": 85,
+  "mix": 36,
+  "feedback": 16,
+  "tone": 64,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Near",
+  "motionProfile": "Warp"
+}

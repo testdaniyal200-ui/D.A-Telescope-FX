@@ -1,0 +1,16 @@
+{
+  "index": 32,
+  "name": "Deep Space Dark Matter",
+  "mode": "Dimension",
+  "zoom": 62,
+  "spread": 98,
+  "distance": 89,
+  "motion": 23,
+  "mix": 52,
+  "feedback": 52,
+  "tone": 48,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

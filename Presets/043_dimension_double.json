@@ -1,0 +1,16 @@
+{
+  "index": 42,
+  "name": "Dimension Double",
+  "mode": "Dimension",
+  "zoom": 64,
+  "spread": 94,
+  "distance": 65,
+  "motion": 50,
+  "mix": 27,
+  "feedback": 37,
+  "tone": 65,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

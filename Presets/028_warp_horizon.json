@@ -1,0 +1,16 @@
+{
+  "index": 27,
+  "name": "Warp Horizon",
+  "mode": "Dimension",
+  "zoom": 80,
+  "spread": 63,
+  "distance": 61,
+  "motion": 78,
+  "mix": 51,
+  "feedback": 50,
+  "tone": 69,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 9,
+  "name": "Nebula Cascade",
+  "mode": "Warp",
+  "zoom": 80,
+  "spread": 62,
+  "distance": 86,
+  "motion": 42,
+  "mix": 36,
+  "feedback": 40,
+  "tone": 66,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

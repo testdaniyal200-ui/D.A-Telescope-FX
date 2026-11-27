@@ -1,0 +1,16 @@
+{
+  "index": 91,
+  "name": "Cinema Expanse",
+  "mode": "Atmosphere",
+  "zoom": 89,
+  "spread": 98,
+  "distance": 74,
+  "motion": 61,
+  "mix": 50,
+  "feedback": 71,
+  "tone": 38,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

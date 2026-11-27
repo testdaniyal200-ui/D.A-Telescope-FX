@@ -1,0 +1,16 @@
+{
+  "index": 30,
+  "name": "Deep Space Void",
+  "mode": "Dimension",
+  "zoom": 46,
+  "spread": 72,
+  "distance": 88,
+  "motion": 9,
+  "mix": 47,
+  "feedback": 48,
+  "tone": 54,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

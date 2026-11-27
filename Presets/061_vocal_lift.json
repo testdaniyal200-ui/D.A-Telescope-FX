@@ -1,0 +1,16 @@
+{
+  "index": 60,
+  "name": "Vocal Lift",
+  "mode": "Telescope",
+  "zoom": 39,
+  "spread": 67,
+  "distance": 43,
+  "motion": 11,
+  "mix": 14,
+  "feedback": 15,
+  "tone": 84,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

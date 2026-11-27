@@ -1,0 +1,16 @@
+{
+  "index": 62,
+  "name": "Vocal Ghost",
+  "mode": "Telescope",
+  "zoom": 24,
+  "spread": 51,
+  "distance": 60,
+  "motion": 5,
+  "mix": 35,
+  "feedback": 21,
+  "tone": 92,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

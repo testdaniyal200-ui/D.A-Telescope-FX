@@ -1,0 +1,16 @@
+{
+  "index": 49,
+  "name": "Dimension Shift",
+  "mode": "Telescope",
+  "zoom": 46,
+  "spread": 90,
+  "distance": 54,
+  "motion": 56,
+  "mix": 34,
+  "feedback": 24,
+  "tone": 74,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

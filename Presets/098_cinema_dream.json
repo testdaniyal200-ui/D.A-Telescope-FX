@@ -1,0 +1,16 @@
+{
+  "index": 97,
+  "name": "Cinema Dream",
+  "mode": "Telescope",
+  "zoom": 85,
+  "spread": 99,
+  "distance": 92,
+  "motion": 43,
+  "mix": 56,
+  "feedback": 78,
+  "tone": 43,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

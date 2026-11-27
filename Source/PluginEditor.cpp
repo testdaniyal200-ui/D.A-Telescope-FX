@@ -1,11 +1,13 @@
 #include "PluginEditor.h"
 #include <BinaryData.h>
+#include <algorithm>
 #include <cmath>
 
 namespace
 {
 constexpr float baseWidth = 1440.0f;
 constexpr float baseHeight = 810.0f;
+constexpr double twoPi = juce::MathConstants<double>::twoPi;
 // Central galaxy HUD geometry (base-resolution coordinates), used as a large draggable zoom knob.
 constexpr float centralKnobX = 720.5f;
 constexpr float centralKnobY = 449.5f;
@@ -19,11 +21,82 @@ juce::Image loadEmbedded (const void* data, int length)
 {
     return juce::ImageCache::getFromMemory (data, length);
 }
+
+// Vector icons drawn instead of font glyphs (‹ › ▤ ⚙ ☰) so no platform font
+// dependency can render them as empty boxes.
+void drawChevron (juce::Graphics& g, juce::Rectangle<float> r, bool left, juce::Colour colour)
+{
+    g.setColour (colour);
+    juce::Path p;
+    const float tipX = left ? r.getX() : r.getRight();
+    const float baseX = left ? r.getX() + r.getWidth() * 0.62f
+                             : r.getX() + r.getWidth() * 0.38f;
+    p.startNewSubPath (baseX, r.getY() + r.getHeight() * 0.18f);
+    p.lineTo (tipX, r.getCentreY());
+    p.lineTo (baseX, r.getBottom() - r.getHeight() * 0.18f);
+    g.strokePath (p, juce::PathStrokeType (2.6f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+}
+
+void drawMenuIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour colour)
+{
+    g.setColour (colour);
+    const int lines = 3;
+    const float top = r.getY() + r.getHeight() * 0.26f;
+    const float bottom = r.getBottom() - r.getHeight() * 0.26f;
+    const float x0 = r.getX() + r.getWidth() * 0.16f;
+    const float x1 = r.getRight() - r.getWidth() * 0.16f;
+    for (int i = 0; i < lines; ++i)
+    {
+        const float y = top + (bottom - top) * static_cast<float> (i) / (lines - 1);
+        g.drawLine (x0, y, x1, y, 2.2f);
+    }
+}
+
+void drawGearIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour colour)
+{
+    const auto cx = r.getCentreX();
+    const auto cy = r.getCentreY();
+    const float outer = std::min (r.getWidth(), r.getHeight()) * 0.47f;
+    const float inner = outer * 0.70f;
+    const int teeth = 8;
+    juce::Path p;
+    for (int i = 0; i < teeth; ++i)
+    {
+        const float a0 = static_cast<float> (i) / teeth * static_cast<float> (twoPi);
+        const float a1 = a0 + static_cast<float> (twoPi) / teeth * 0.40f;
+        const float a2 = a0 + static_cast<float> (twoPi) / teeth * 0.60f;
+        const float a3 = static_cast<float> (i + 1) / teeth * static_cast<float> (twoPi);
+        const auto o0 = juce::Point<float> (cx + outer * std::cos (a0), cy + outer * std::sin (a0));
+        const auto o1 = juce::Point<float> (cx + outer * std::cos (a1), cy + outer * std::sin (a1));
+        const auto i2 = juce::Point<float> (cx + inner * std::cos (a2), cy + inner * std::sin (a2));
+        const auto i3 = juce::Point<float> (cx + inner * std::cos (a3), cy + inner * std::sin (a3));
+        if (i == 0)
+            p.startNewSubPath (o0);
+        else
+            p.lineTo (o0);
+        p.lineTo (o1);
+        p.lineTo (i2);
+        p.lineTo (i3);
+    }
+    p.closeSubPath();
+    g.setColour (colour);
+    g.fillPath (p);
+    g.setColour (juce::Colour (0xff14121c)); // matches the header pill background
+    g.fillEllipse (cx, cy, inner * 0.84f, inner * 0.84f);
+}
 }
 
 void NeonKnob::paint (juce::Graphics& g)
 {
     const auto square = getLocalBounds().toFloat().reduced (2.0f);
+    const auto center = square.getCentre();
+    const float value = static_cast<float> ((getValue() - getMinimum()) / (getMaximum() - getMinimum()));
+
+    // Rotate the knob picture with the value so its engraved indicator line
+    // sweeps along the arc exactly like a real rotary control.
+    g.saveState();
+    g.addTransform (juce::AffineTransform::rotation (value * juce::MathConstants<float>::pi * 1.54f,
+                                                     center.x, center.y));
     if (picture.isValid())
         g.drawImageWithin (picture, static_cast<int> (square.getX()), static_cast<int> (square.getY()),
                            static_cast<int> (square.getWidth()), static_cast<int> (square.getHeight()),
@@ -33,9 +106,8 @@ void NeonKnob::paint (juce::Graphics& g)
         g.setColour (juce::Colours::black);
         g.fillEllipse (square);
     }
+    g.restoreState();
 
-    const float value = static_cast<float> ((getValue() - getMinimum()) / (getMaximum() - getMinimum()));
-    const auto center = getLocalBounds().toFloat().getCentre();
     const float radius = 0.419f * std::min (getWidth(), getHeight());
     const float startAngle = juce::MathConstants<float>::pi * 1.23f;
     const float finalAngle = startAngle + value * juce::MathConstants<float>::pi * 1.54f;
@@ -131,6 +203,13 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
 
 void DATelescopeAudioProcessorEditor::resized()
 {
+    // Uniform scale keeps the 16:9 layout undistorted at any window aspect;
+    // the content is centred and the remaining area stays as dark letterbox.
+    contentScale = std::min (static_cast<float> (getWidth()) / baseWidth,
+                             static_cast<float> (getHeight()) / baseHeight);
+    contentOffsetX = (static_cast<float> (getWidth()) - baseWidth * contentScale) * 0.5f;
+    contentOffsetY = (static_cast<float> (getHeight()) - baseHeight * contentScale) * 0.5f;
+
     struct Area { int x, y, size; };
     const std::array<Area, 4> areas {{ {225, 193, 225}, {225, 430, 225},
                                        {989, 193, 225}, {989, 430, 225} }};
@@ -138,10 +217,10 @@ void DATelescopeAudioProcessorEditor::resized()
     for (size_t i = 0; i < knobs.size(); ++i)
         knobs[i]->setBounds (juce::Rectangle<int> (juce::roundToInt (scaledX ((float) areas[i].x)),
                                                    juce::roundToInt (scaledY ((float) areas[i].y)),
-                                                   juce::roundToInt (scaledX ((float) areas[i].size)),
-                                                   juce::roundToInt (scaledY ((float) areas[i].size))));
+                                                   juce::roundToInt (areas[i].size * contentScale),
+                                                   juce::roundToInt (areas[i].size * contentScale)));
     settings.setBounds (juce::roundToInt (scaledX (1094)), juce::roundToInt (scaledY (105)),
-                        juce::roundToInt (scaledX (320)), juce::roundToInt (scaledY (238)));
+                        juce::roundToInt (320.0f * contentScale), juce::roundToInt (238.0f * contentScale));
 }
 
 void DATelescopeAudioProcessorEditor::paintText (juce::Graphics& g, const juce::String& txt,
@@ -219,7 +298,8 @@ void DATelescopeAudioProcessorEditor::paintButton (juce::Graphics& g, juce::Rect
 void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colour (0xff020106));
-    g.addTransform (juce::AffineTransform::scale (getWidth() / baseWidth, getHeight() / baseHeight));
+    g.addTransform (juce::AffineTransform::scale (contentScale, contentScale)
+                                      .translated (contentOffsetX, contentOffsetY));
     if (background.isValid())
         g.drawImage (background, 0.0f, 0.0f, baseWidth, baseHeight, 0, 0,
                      background.getWidth(), background.getHeight());
@@ -243,27 +323,30 @@ void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillRoundedRectangle (juce::Rectangle<float> (548.0f, 68.0f, 347.0f, 37.0f), 18.0f);
     g.setColour (juce::Colour (0xff584762));
     g.drawRoundedRectangle (juce::Rectangle<float> (548.0f, 68.0f, 347.0f, 37.0f), 18.0f, 1.0f);
-    paintText (g, "‹", 559, 69, 30, 36, 29, ivory);
+    drawChevron (g, {559.0f, 69.0f, 30.0f, 36.0f}, true, ivory);
     paintText (g, processor.getProgramName (processor.currentProgram.load()), 594, 70, 252, 34, 15, ivory);
-    paintText (g, "›", 845, 69, 35, 36, 29, ivory);
-    paintText (g, "▤", 906, 69, 28, 35, 19, ivory);
+    drawChevron (g, {845.0f, 69.0f, 35.0f, 36.0f}, false, ivory);
+    drawMenuIcon (g, {906.0f, 69.0f, 28.0f, 35.0f}, ivory);
     paintText (g, "SPATIAL FX ENGINE", 1017, 70, 183, 30, 11, muted);
-    paintText (g, "⚙", 1230, 70, 41, 31, 25, ivory);
-    paintText (g, "☰", 1296, 70, 37, 31, 21, ivory);
+    drawGearIcon (g, {1230.0f, 70.0f, 41.0f, 31.0f}, ivory);
+    drawMenuIcon (g, {1296.0f, 70.0f, 37.0f, 31.0f}, ivory);
 
     paintText (g, "T E L E S C O P E   F X", 432, 127, 576, 51, 27, juce::Colour (0xffe5cbff));
     paintText (g, "S P A C E    •    M O T I O N    •    D I M E N S I O N",
                474, 173, 495, 23, 11, muted);
 
-    // Starry central window. The image is isolated from the reference style.
+    // Starry central window. The nebula drifts and wobbles at a rate driven by
+    // the incoming signal level, so the stars keep moving with the audio.
     if (galaxyImage.isValid())
+    {
+        const float peak = processor.inputPeak.load();
+        const float wobble = static_cast<float> (std::sin (galaxyWobblePhase)) * 0.06f * peak;
+        g.saveState();
+        g.addTransform (juce::AffineTransform::rotation (static_cast<float> (galaxyAngle) + wobble,
+                                                          centralKnobX, centralKnobY));
         g.drawImageWithin (galaxyImage, 473, 202, 495, 495, juce::RectanglePlacement::centred);
-    // Replace baked numeric image caption with a dynamic overlay.
-    g.setColour (juce::Colour (0xda100b21));
-    g.fillRoundedRectangle (juce::Rectangle<float> (615, 571, 210, 76), 15.0f);
-    paintText (g, "S P A T I A L   Z O O M", 632, 580, 180, 23, 12, ivory);
-    const auto magnification = 1.0f + valueAsInt ("zoom") * 0.1583f;
-    paintText (g, juce::String (magnification, 1) + " x", 631, 602, 182, 42, 35, ivory);
+        g.restoreState();
+    }
 
     paintText (g, "ZOOM", 236, 407, 204, 26, 16, ivory);
     paintText (g, juce::String (valueAsInt ("zoom")) + "%", 236, 431, 204, 24, 14, muted);
@@ -356,10 +439,15 @@ void DATelescopeAudioProcessorEditor::showPresetMenu()
                         });
 }
 
+juce::Point<float> DATelescopeAudioProcessorEditor::baseCoords (const juce::Point<float>& screen) const
+{
+    return (screen - juce::Point<float> (contentOffsetX, contentOffsetY)) / contentScale;
+}
+
 void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
 {
-    const auto x = e.position.x * baseWidth / getWidth();
-    const auto y = e.position.y * baseHeight / getHeight();
+    const auto c = baseCoords (e.position.toFloat());
+    const auto x = c.x, y = c.y;
 
     // The central galaxy HUD doubles as a large zoom knob.
     if (isCentralKnobHit (x, y))
@@ -405,8 +493,8 @@ void DATelescopeAudioProcessorEditor::mouseDrag (const juce::MouseEvent& e)
 {
     if (! centralDragging) return;
 
-    const auto x = e.position.x * baseWidth / getWidth();
-    const auto y = e.position.y * baseHeight / getHeight();
+    const auto c = baseCoords (e.position.toFloat());
+    const auto x = c.x, y = c.y;
     const auto angle = std::atan2 (y - centralKnobY, x - centralKnobX);
     auto delta = angle - centralDragStartAngle;
     while (delta > juce::MathConstants<double>::pi) delta -= juce::MathConstants<double>::twoPi;
@@ -426,5 +514,12 @@ void DATelescopeAudioProcessorEditor::timerCallback()
 {
     if (lastProgram != processor.currentProgram.load())
         lastProgram = processor.currentProgram.load();
+
+    // The nebula drifts/shakes at a rate driven by the incoming signal level
+    // (the entered frequency), so it visibly moves with the audio.
+    const float peak = processor.inputPeak.load();
+    const double rate = 0.05 + peak * 1.5; // base drift + audio-driven motion
+    galaxyAngle += rate * 0.0167;
+    galaxyWobblePhase += rate * 0.35;
     repaint();
 }

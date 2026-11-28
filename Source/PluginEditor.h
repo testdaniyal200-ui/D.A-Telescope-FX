@@ -22,20 +22,6 @@ private:
     juce::Image picture;
 };
 
-class DASettingsPanel final : public juce::Component
-{
-public:
-    explicit DASettingsPanel (juce::AudioProcessorValueTreeState&);
-    void paint (juce::Graphics&) override;
-    void resized() override;
-private:
-    juce::Slider mixSlider, feedbackSlider, toneSlider;
-    juce::Label mixLabel, feedbackLabel, toneLabel;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttach, feedbackAttach, toneAttach;
-};
-
-// A dedicated, in-theme preset browser page shown as an overlay. It lists all
-// factory presets grouped by category with click-to-load and scrolling.
 class DAPresetBrowser final : public juce::Component
 {
 public:
@@ -103,7 +89,6 @@ private:
     juce::Image background, knobImage, galaxyImage;
     NeonKnob zoomKnob, spreadKnob, distanceKnob, motionKnob;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> knobAttachments;
-    DASettingsPanel settings;
     DAPresetBrowser presetBrowser;
     int lastProgram = -1;
 

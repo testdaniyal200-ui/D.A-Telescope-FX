@@ -185,54 +185,6 @@ void NeonKnob::paint (juce::Graphics& g)
     g.fillEllipse (center.x + dx * markerRadius, center.y + dy * markerRadius, 4.0f, 4.0f);
 }
 
-DASettingsPanel::DASettingsPanel (juce::AudioProcessorValueTreeState& parameters)
-{
-    auto init = [this] (juce::Slider& slider, juce::Label& label, const char* text)
-    {
-        addAndMakeVisible (label);
-        label.setText (text, juce::dontSendNotification);
-        label.setColour (juce::Label::textColourId, ivory);
-        label.setFont (getUiFont (14.0f));
-        addAndMakeVisible (slider);
-        slider.setSliderStyle (juce::Slider::LinearHorizontal);
-        slider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 56, 25);
-        slider.setColour (juce::Slider::trackColourId, neon);
-        slider.setColour (juce::Slider::backgroundColourId, juce::Colour (0xff292037));
-        slider.setColour (juce::Slider::thumbColourId, ivory);
-        slider.setColour (juce::Slider::textBoxTextColourId, ivory);
-        slider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
-    };
-    init (mixSlider, mixLabel, "WET / DRY MIX");
-    init (feedbackSlider, feedbackLabel, "FEEDBACK");
-    init (toneSlider, toneLabel, "TONE");
-    mixAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (parameters, "mix", mixSlider);
-    feedbackAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (parameters, "feedback", feedbackSlider);
-    toneAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (parameters, "tone", toneSlider);
-}
-
-void DASettingsPanel::paint (juce::Graphics& g)
-{
-    g.setColour (juce::Colour (0xf9080712));
-    g.fillRoundedRectangle (getLocalBounds().toFloat(), 15.0f);
-    g.setColour (neon.withAlpha (0.72f));
-    g.drawRoundedRectangle (getLocalBounds().toFloat().reduced (1.0f), 15.0f, 1.25f);
-    g.setColour (ivory);
-    g.setFont (getUiFont (16.0f).boldened());
-    g.drawText ("ENGINE SETTINGS", 18, 11, getWidth() - 36, 24, juce::Justification::centredLeft);
-}
-
-void DASettingsPanel::resized()
-{
-    auto row = [this] (juce::Label& label, juce::Slider& slider, int y)
-    {
-        label.setBounds (18, y, 146, 24);
-        slider.setBounds (16, y + 22, getWidth() - 34, 30);
-    };
-    row (mixLabel, mixSlider, 40);
-    row (feedbackLabel, feedbackSlider, 100);
-    row (toneLabel, toneSlider, 160);
-}
-
 namespace
 {
 // Preset categories in display order; index 0 is the "ALL" entry.
@@ -437,7 +389,6 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
       knobImage (loadEmbedded (BinaryData::knob_png, BinaryData::knob_pngSize, 1.3f, 1.35f)),
       galaxyImage (loadEmbedded (BinaryData::galaxy_png, BinaryData::galaxy_pngSize, 1.7f, 1.35f)),
       zoomKnob (knobImage), spreadKnob (knobImage), distanceKnob (knobImage), motionKnob (knobImage),
-      settings (p.parameters),
       presetBrowser (p)
 {
     const std::array<const char*, 4> ids { "zoom", "spread", "distance", "motion" };
@@ -450,7 +401,6 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
         knobs[i]->setTooltip (juce::String (ids[i]) + " - drag to adjust, double-click to reset");
         knobs[i]->setDoubleClickReturnValue (true, i == 0 ? 72.0 : i == 1 ? 58.0 : i == 2 ? 63.0 : 41.0);
     }
-    addChildComponent (settings);
     addChildComponent (presetBrowser);
     presetBrowser.setVisible (false);
     presetBrowser.onSelect = [this] (int idx)
@@ -485,9 +435,6 @@ void DATelescopeAudioProcessorEditor::resized()
                                                    juce::roundToInt (scaledY ((float) areas[i].y)),
                                                    juce::roundToInt (areas[i].size * contentScale),
                                                    juce::roundToInt (areas[i].size * contentScale)));
-    settings.setBounds (juce::roundToInt (scaledX (1094)), juce::roundToInt (scaledY (105)),
-                        juce::roundToInt (320.0f * contentScale), juce::roundToInt (238.0f * contentScale));
-
     // The preset browser overlays the whole window; it draws in base
     // coordinates using the same uniform transform as the main paint().
     presetBrowser.setBounds (0, 0, getWidth(), getHeight());
@@ -730,7 +677,9 @@ void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
         // The preset name area opens the full preset browser page (names +
         // categories) instead of a popup menu.
         if (x >= 596 && x <= 941) { openPresetBrowser(); return; }
-        if (x >= 1220 && x <= 1290) { settings.setVisible (! settings.isVisible()); return; }
+        // The gear icon (image-2.png target) opens the full preset browser page
+        // (names + categories), not the engine settings panel.
+        if (x >= 1220 && x <= 1290) { openPresetBrowser(); return; }
     }
     if (y >= 709 && y <= 755 && x >= 355 && x <= 1090)
     {

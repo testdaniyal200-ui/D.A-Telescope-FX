@@ -41,7 +41,7 @@ juce_add_binary_data(DA_TelescopeAssets SOURCES
     Assets/Runtime/gui_background.png
     Assets/Runtime/knob.png
     Assets/Runtime/galaxy.png
-    Assets/Fonts/Poppins-Regular.ttf
+    Assets/Fonts/poppins_regular.ttf
 )
 
 target_sources(DA_Telescope PRIVATE

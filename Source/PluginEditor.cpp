@@ -62,8 +62,8 @@ juce::Image loadEmbedded (const void* data, int length, float gain = 1.0f, float
 juce::Font getUiFont (float size)
 {
     static const juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor (
-        static_cast<const void*> (BinaryData::Poppins_Regular_ttf),
-        static_cast<size_t> (BinaryData::Poppins_Regular_ttfSize));
+        static_cast<const void*> (BinaryData::poppins_regular_ttf),
+        static_cast<size_t> (BinaryData::poppins_regular_ttfSize));
     if (typeface != nullptr)
         return juce::Font (juce::FontOptions (typeface).withPointHeight (size));
     return juce::Font (juce::FontOptions (size));

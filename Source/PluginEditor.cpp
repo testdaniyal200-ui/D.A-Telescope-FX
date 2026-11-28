@@ -84,21 +84,6 @@ void drawChevron (juce::Graphics& g, juce::Rectangle<float> r, bool left, juce::
     g.strokePath (p, juce::PathStrokeType (2.6f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 }
 
-void drawMenuIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour colour)
-{
-    g.setColour (colour);
-    const int lines = 3;
-    const float top = r.getY() + r.getHeight() * 0.26f;
-    const float bottom = r.getBottom() - r.getHeight() * 0.26f;
-    const float x0 = r.getX() + r.getWidth() * 0.16f;
-    const float x1 = r.getRight() - r.getWidth() * 0.16f;
-    for (int i = 0; i < lines; ++i)
-    {
-        const float y = top + (bottom - top) * static_cast<float> (i) / (lines - 1);
-        g.drawLine (x0, y, x1, y, 2.2f);
-    }
-}
-
 void drawGearIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour colour)
 {
     const auto cx = r.getCentreX();
@@ -593,7 +578,10 @@ void DATelescopeAudioProcessorEditor::paintButton (juce::Graphics& g, juce::Rect
 
 void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colour (0xff020106));
+    // Fill the whole window with the panel's dark tone so the letterbox bands
+    // (top/bottom when the window isn't 16:9) blend in seamlessly instead of
+    // showing as stark black.
+    g.fillAll (juce::Colour (0xff060610));
     g.addTransform (juce::AffineTransform::scale (contentScale, contentScale)
                                       .translated (contentOffsetX, contentOffsetY));
     if (background.isValid())
@@ -622,10 +610,8 @@ void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
     drawChevron (g, {559.0f, 69.0f, 30.0f, 36.0f}, true, ivory);
     paintText (g, processor.getProgramName (processor.currentProgram.load()), 594, 70, 252, 34, 15, ivory);
     drawChevron (g, {845.0f, 69.0f, 35.0f, 36.0f}, false, ivory);
-    drawMenuIcon (g, {906.0f, 69.0f, 28.0f, 35.0f}, ivory);
     paintText (g, "SPATIAL FX ENGINE", 1017, 70, 183, 30, 11, muted);
     drawGearIcon (g, {1230.0f, 70.0f, 41.0f, 31.0f}, ivory);
-    drawMenuIcon (g, {1296.0f, 70.0f, 37.0f, 31.0f}, ivory);
 
     paintText (g, "T E L E S C O P E   F X", 432, 127, 576, 51, 27, juce::Colour (0xffe5cbff));
     // Draw the separator dots as vector circles (not font glyphs) to avoid tofu boxes.
@@ -713,33 +699,6 @@ void DATelescopeAudioProcessorEditor::chooseProgram (int index)
     repaint();
 }
 
-void DATelescopeAudioProcessorEditor::showPresetMenu()
-{
-    juce::PopupMenu menu;
-    static const std::array<const char*, 10> groups {
-        "NEBULA", "ORBIT", "WARP", "DEEP SPACE", "DIMENSION", "ATMOSPHERE",
-        "VOCAL", "RHYTHM", "GUITAR", "CINEMA"
-    };
-    for (int category = 0; category < 10; ++category)
-    {
-        juce::PopupMenu submenu;
-        for (int j = 0; j < 10; ++j)
-        {
-            const int idx = category * 10 + j;
-            submenu.addItem (idx + 1, processor.getProgramName (idx), true,
-                             processor.currentProgram.load() == idx);
-        }
-        menu.addSubMenu (groups[static_cast<size_t> (category)], submenu);
-    }
-    juce::Component::SafePointer<DATelescopeAudioProcessorEditor> safeThis (this);
-    menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (this),
-                        [safeThis] (int picked)
-                        {
-                            if (safeThis != nullptr && picked > 0)
-                                safeThis->chooseProgram (picked - 1);
-                        });
-}
-
 juce::Point<float> DATelescopeAudioProcessorEditor::baseCoords (const juce::Point<float>& screen) const
 {
     return (screen - juce::Point<float> (contentOffsetX, contentOffsetY)) / contentScale;
@@ -768,9 +727,10 @@ void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
     {
         if (x >= 548 && x <= 595) { chooseProgram (processor.currentProgram.load() - 1); return; }
         if (x >= 843 && x <= 901) { chooseProgram (processor.currentProgram.load() + 1); return; }
-        if (x >= 596 && x <= 941) { showPresetMenu(); return; }
+        // The preset name area opens the full preset browser page (names +
+        // categories) instead of a popup menu.
+        if (x >= 596 && x <= 941) { openPresetBrowser(); return; }
         if (x >= 1220 && x <= 1290) { settings.setVisible (! settings.isVisible()); return; }
-        if (x >= 1290 && x <= 1360) { openPresetBrowser(); return; }
     }
     if (y >= 709 && y <= 755 && x >= 355 && x <= 1090)
     {

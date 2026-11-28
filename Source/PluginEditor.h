@@ -85,7 +85,6 @@ private:
     void applyParameterValue (const char* id, float value);
     juce::Point<float> baseCoords (const juce::Point<float>& screen) const;
     void chooseProgram (int index);
-    void showPresetMenu();
     void openPresetBrowser();
     void closePresetBrowser();
     void setChoice (const char* id, int index);

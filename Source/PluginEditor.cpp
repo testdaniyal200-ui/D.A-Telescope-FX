@@ -17,9 +17,42 @@ const juce::Colour muted (0xffbbb1d6);
 const juce::Colour neon (0xffb683ff);
 const juce::Colour darkGlass (0xee050510);
 
-juce::Image loadEmbedded (const void* data, int length)
+// The bundled PNG assets are authored with very dark nebula/star fields, so a
+// plain draw leaves them nearly invisible against the dark glass panel. Load
+// each one and apply an HSV gain + saturation lift so the textures read clearly
+// while preserving hue and alpha (a straight RGB multiply would muddy colours).
+juce::Image brightenImage (juce::Image src, float gain, float saturation)
 {
-    return juce::ImageCache::getFromMemory (data, length);
+    if (! src.isValid())
+        return src;
+
+    juce::Image dst = src.createCopy();
+    juce::Image::BitmapData bm (dst, juce::Image::BitmapData::readWrite);
+
+    const int w = dst.getWidth();
+    const int h = dst.getHeight();
+
+    for (int y = 0; y < h; ++y)
+    {
+        for (int x = 0; x < w; ++x)
+        {
+            const auto c = bm.getPixelColour (x, y);
+            if (c.getAlpha() == 0)
+                continue;
+
+            const float hue = c.getHue();
+            const float sat = juce::jmin (1.0f, c.getSaturation() * saturation);
+            const float bri = juce::jmin (1.0f, c.getBrightness() * gain);
+            bm.setPixelColour (x, y, juce::Colour::fromHSV (hue, sat, bri, c.getAlpha() / 255.0f));
+        }
+    }
+
+    return dst;
+}
+
+juce::Image loadEmbedded (const void* data, int length, float gain = 1.0f, float saturation = 1.0f)
+{
+    return brightenImage (juce::ImageCache::getFromMemory (data, length), gain, saturation);
 }
 
 // Vector icons drawn instead of font glyphs (‹ › ▤ ⚙ ☰) so no platform font
@@ -394,9 +427,9 @@ void DAPresetBrowser::mouseWheelMove (const juce::MouseEvent&, const juce::Mouse
 DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAudioProcessor& p)
     : juce::AudioProcessorEditor (&p),
       processor (p),
-      background (loadEmbedded (BinaryData::gui_background_png, BinaryData::gui_background_pngSize)),
-      knobImage (loadEmbedded (BinaryData::knob_png, BinaryData::knob_pngSize)),
-      galaxyImage (loadEmbedded (BinaryData::galaxy_png, BinaryData::galaxy_pngSize)),
+      background (loadEmbedded (BinaryData::gui_background_png, BinaryData::gui_background_pngSize, 1.6f, 1.3f)),
+      knobImage (loadEmbedded (BinaryData::knob_png, BinaryData::knob_pngSize, 1.3f, 1.35f)),
+      galaxyImage (loadEmbedded (BinaryData::galaxy_png, BinaryData::galaxy_pngSize, 1.7f, 1.35f)),
       zoomKnob (knobImage), spreadKnob (knobImage), distanceKnob (knobImage), motionKnob (knobImage),
       settings (p.parameters),
       presetBrowser (p)

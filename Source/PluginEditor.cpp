@@ -133,14 +133,18 @@ void drawGearIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour col
 }
 
 // Shared text helper usable by both the editor and the preset browser.
+// Uses drawText (not drawFittedText): drawFittedText squashes/scales the font
+// to fit the rectangle, and the embedded font rasterises as "tofu" boxes at the
+// fractional scaled sizes it produces. drawText draws at the exact font size, so
+// glyphs render correctly (truncating with an ellipsis only if truly too wide).
 void paintTextFitted (juce::Graphics& g, const juce::String& txt, float x, float y,
                       float w, float h, float size, juce::Colour colour, bool centre)
 {
     g.setColour (colour);
     g.setFont (getUiFont (size));
-    g.drawFittedText (txt, juce::Rectangle<int> (juce::roundToInt (x), juce::roundToInt (y),
+    g.drawText (txt, juce::Rectangle<int> (juce::roundToInt (x), juce::roundToInt (y),
                        juce::roundToInt (w), juce::roundToInt (h)),
-                      centre ? juce::Justification::centred : juce::Justification::centredLeft, 1);
+                centre ? juce::Justification::centred : juce::Justification::centredLeft);
 }
 }
 
@@ -370,7 +374,7 @@ void DAPresetBrowser::paint (juce::Graphics& g)
         g.setColour (current ? neon : juce::Colour (0x555c4c71));
         g.drawRoundedRectangle (r.reduced (0.8f), 14.0f, current ? 2.0f : 1.0f);
         paintTextFitted (g, juce::String (i + 1).paddedLeft (3, '0') + "  " + processor.getProgramName (i),
-                   r.getX() + 16.0f, r.getY() + 12.0f, r.getWidth() - 32.0f, 26.0f, 13.0f,
+                   r.getX() + 16.0f, r.getY() + 12.0f, r.getWidth() - 32.0f, 26.0f, 12.0f,
                    current ? ivory : juce::Colour (0xffd8cee8), false);
         paintTextFitted (g, categoryLabelFor (processor.getProgramName (i)),
                    r.getX() + 16.0f, r.getY() + 42.0f, r.getWidth() - 32.0f, 22.0f, 10.0f, muted, false);

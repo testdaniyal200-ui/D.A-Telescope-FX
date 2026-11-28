@@ -1,0 +1,16 @@
+{
+  "index": 28,
+  "name": "Warp Flight",
+  "mode": "Atmosphere",
+  "zoom": 92,
+  "spread": 59,
+  "distance": 58,
+  "motion": 78,
+  "mix": 53,
+  "feedback": 58,
+  "tone": 59,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

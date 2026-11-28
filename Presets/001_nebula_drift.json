@@ -1,0 +1,16 @@
+{
+  "index": 0,
+  "name": "Nebula Drift",
+  "mode": "Telescope",
+  "zoom": 72,
+  "spread": 58,
+  "distance": 63,
+  "motion": 41,
+  "mix": 45,
+  "feedback": 32,
+  "tone": 65,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Warp"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 16,
+  "name": "Orbit Arc",
+  "mode": "Warp",
+  "zoom": 65,
+  "spread": 75,
+  "distance": 42,
+  "motion": 76,
+  "mix": 62,
+  "feedback": 51,
+  "tone": 50,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

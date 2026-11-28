@@ -1,0 +1,16 @@
+{
+  "index": 75,
+  "name": "Rhythm Sidechain",
+  "mode": "Dimension",
+  "zoom": 40,
+  "spread": 64,
+  "distance": 27,
+  "motion": 80,
+  "mix": 40,
+  "feedback": 26,
+  "tone": 86,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Near",
+  "motionProfile": "Warp"
+}

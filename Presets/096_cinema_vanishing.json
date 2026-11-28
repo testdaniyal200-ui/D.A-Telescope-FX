@@ -1,0 +1,16 @@
+{
+  "index": 95,
+  "name": "Cinema Vanishing",
+  "mode": "Telescope",
+  "zoom": 74,
+  "spread": 80,
+  "distance": 92,
+  "motion": 61,
+  "mix": 63,
+  "feedback": 85,
+  "tone": 59,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

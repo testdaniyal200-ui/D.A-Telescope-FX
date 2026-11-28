@@ -1,0 +1,16 @@
+{
+  "index": 57,
+  "name": "Atmosphere Lunar",
+  "mode": "Telescope",
+  "zoom": 55,
+  "spread": 75,
+  "distance": 89,
+  "motion": 8,
+  "mix": 62,
+  "feedback": 57,
+  "tone": 46,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

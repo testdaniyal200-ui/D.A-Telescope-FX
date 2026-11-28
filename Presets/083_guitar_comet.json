@@ -1,0 +1,16 @@
+{
+  "index": 82,
+  "name": "Guitar Comet",
+  "mode": "Atmosphere",
+  "zoom": 51,
+  "spread": 66,
+  "distance": 59,
+  "motion": 26,
+  "mix": 40,
+  "feedback": 39,
+  "tone": 54,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

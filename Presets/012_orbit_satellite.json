@@ -1,0 +1,16 @@
+{
+  "index": 11,
+  "name": "Orbit Satellite",
+  "mode": "Orbit",
+  "zoom": 60,
+  "spread": 75,
+  "distance": 52,
+  "motion": 55,
+  "mix": 41,
+  "feedback": 45,
+  "tone": 69,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

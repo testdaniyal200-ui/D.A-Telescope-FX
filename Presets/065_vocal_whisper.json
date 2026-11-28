@@ -1,0 +1,16 @@
+{
+  "index": 64,
+  "name": "Vocal Whisper",
+  "mode": "Orbit",
+  "zoom": 23,
+  "spread": 61,
+  "distance": 57,
+  "motion": 28,
+  "mix": 35,
+  "feedback": 32,
+  "tone": 70,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 36,
+  "name": "Deep Space Beyond",
+  "mode": "Atmosphere",
+  "zoom": 65,
+  "spread": 88,
+  "distance": 97,
+  "motion": 8,
+  "mix": 41,
+  "feedback": 66,
+  "tone": 30,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

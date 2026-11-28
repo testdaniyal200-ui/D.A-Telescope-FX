@@ -1,0 +1,16 @@
+{
+  "index": 22,
+  "name": "Warp Slipstream",
+  "mode": "Warp",
+  "zoom": 75,
+  "spread": 67,
+  "distance": 44,
+  "motion": 85,
+  "mix": 38,
+  "feedback": 46,
+  "tone": 45,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

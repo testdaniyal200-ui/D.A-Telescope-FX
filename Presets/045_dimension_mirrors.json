@@ -1,0 +1,16 @@
+{
+  "index": 44,
+  "name": "Dimension Mirrors",
+  "mode": "Atmosphere",
+  "zoom": 48,
+  "spread": 79,
+  "distance": 67,
+  "motion": 68,
+  "mix": 54,
+  "feedback": 23,
+  "tone": 67,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Warp"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 43,
+  "name": "Dimension Glass",
+  "mode": "Dimension",
+  "zoom": 51,
+  "spread": 77,
+  "distance": 58,
+  "motion": 51,
+  "mix": 37,
+  "feedback": 35,
+  "tone": 70,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 23,
+  "name": "Warp Eventide",
+  "mode": "Warp",
+  "zoom": 77,
+  "spread": 55,
+  "distance": 53,
+  "motion": 79,
+  "mix": 34,
+  "feedback": 53,
+  "tone": 39,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 6,
+  "name": "Nebula Passage",
+  "mode": "Orbit",
+  "zoom": 55,
+  "spread": 56,
+  "distance": 64,
+  "motion": 27,
+  "mix": 61,
+  "feedback": 27,
+  "tone": 65,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Static"
+}

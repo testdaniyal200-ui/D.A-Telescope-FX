@@ -1,0 +1,16 @@
+{
+  "index": 71,
+  "name": "Rhythm Doppler",
+  "mode": "Warp",
+  "zoom": 43,
+  "spread": 62,
+  "distance": 39,
+  "motion": 76,
+  "mix": 23,
+  "feedback": 21,
+  "tone": 72,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

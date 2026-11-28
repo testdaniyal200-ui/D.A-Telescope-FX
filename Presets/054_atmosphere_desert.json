@@ -1,0 +1,16 @@
+{
+  "index": 53,
+  "name": "Atmosphere Desert",
+  "mode": "Atmosphere",
+  "zoom": 31,
+  "spread": 64,
+  "distance": 95,
+  "motion": 20,
+  "mix": 63,
+  "feedback": 33,
+  "tone": 42,
+  "zoomProfile": "Close",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 78,
+  "name": "Rhythm Delay",
+  "mode": "Atmosphere",
+  "zoom": 55,
+  "spread": 76,
+  "distance": 44,
+  "motion": 80,
+  "mix": 26,
+  "feedback": 31,
+  "tone": 90,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

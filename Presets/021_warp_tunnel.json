@@ -1,0 +1,16 @@
+{
+  "index": 20,
+  "name": "Warp Tunnel",
+  "mode": "Warp",
+  "zoom": 63,
+  "spread": 52,
+  "distance": 53,
+  "motion": 71,
+  "mix": 54,
+  "feedback": 43,
+  "tone": 39,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

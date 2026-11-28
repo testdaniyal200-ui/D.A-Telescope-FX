@@ -1,0 +1,16 @@
+{
+  "index": 50,
+  "name": "Atmosphere Cloud",
+  "mode": "Atmosphere",
+  "zoom": 59,
+  "spread": 59,
+  "distance": 100,
+  "motion": 14,
+  "mix": 59,
+  "feedback": 31,
+  "tone": 34,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

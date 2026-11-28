@@ -1,0 +1,16 @@
+{
+  "index": 81,
+  "name": "Guitar Cloud",
+  "mode": "Atmosphere",
+  "zoom": 62,
+  "spread": 55,
+  "distance": 63,
+  "motion": 31,
+  "mix": 25,
+  "feedback": 34,
+  "tone": 62,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 58,
+  "name": "Atmosphere Afterglow",
+  "mode": "Orbit",
+  "zoom": 41,
+  "spread": 73,
+  "distance": 98,
+  "motion": 26,
+  "mix": 78,
+  "feedback": 35,
+  "tone": 35,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

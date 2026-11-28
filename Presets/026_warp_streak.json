@@ -1,0 +1,16 @@
+{
+  "index": 25,
+  "name": "Warp Streak",
+  "mode": "Dimension",
+  "zoom": 76,
+  "spread": 62,
+  "distance": 46,
+  "motion": 90,
+  "mix": 57,
+  "feedback": 38,
+  "tone": 40,
+  "zoomProfile": "Far",
+  "spreadProfile": "Wide",
+  "distanceProfile": "Mid",
+  "motionProfile": "Warp"
+}

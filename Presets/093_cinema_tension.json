@@ -1,0 +1,16 @@
+{
+  "index": 92,
+  "name": "Cinema Tension",
+  "mode": "Atmosphere",
+  "zoom": 88,
+  "spread": 72,
+  "distance": 95,
+  "motion": 52,
+  "mix": 70,
+  "feedback": 75,
+  "tone": 60,
+  "zoomProfile": "Far",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Orbit"
+}

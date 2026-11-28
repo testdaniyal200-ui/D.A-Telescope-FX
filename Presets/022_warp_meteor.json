@@ -1,0 +1,16 @@
+{
+  "index": 21,
+  "name": "Warp Meteor",
+  "mode": "Warp",
+  "zoom": 65,
+  "spread": 72,
+  "distance": 50,
+  "motion": 59,
+  "mix": 43,
+  "feedback": 44,
+  "tone": 41,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Mid",
+  "motionProfile": "Orbit"
+}

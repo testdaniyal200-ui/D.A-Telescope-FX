@@ -1,0 +1,16 @@
+{
+  "index": 52,
+  "name": "Atmosphere Aurora",
+  "mode": "Atmosphere",
+  "zoom": 46,
+  "spread": 67,
+  "distance": 77,
+  "motion": 6,
+  "mix": 62,
+  "feedback": 31,
+  "tone": 56,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

@@ -1,0 +1,16 @@
+{
+  "index": 39,
+  "name": "Deep Space Signal",
+  "mode": "Telescope",
+  "zoom": 62,
+  "spread": 78,
+  "distance": 96,
+  "motion": 20,
+  "mix": 58,
+  "feedback": 58,
+  "tone": 58,
+  "zoomProfile": "Balanced",
+  "spreadProfile": "Galactic",
+  "distanceProfile": "Deep",
+  "motionProfile": "Static"
+}

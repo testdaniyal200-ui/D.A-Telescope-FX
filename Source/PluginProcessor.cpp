@@ -18,6 +18,12 @@ int choice (const juce::AudioProcessorValueTreeState& state, const char* id) noe
         return juce::jlimit (0, 4, static_cast<int> (std::lround (value->load())));
     return 0;
 }
+// One-pole low-pass, stateless helper used by the tone filter.
+float onePolerImpl (float& state, float input, float coefficient) noexcept
+{
+    state += coefficient * (input - state);
+    return state;
+}
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout DATelescopeAudioProcessor::createParameterLayout()
@@ -71,8 +77,22 @@ void DATelescopeAudioProcessor::resetEffects()
     for (auto& buffer : delayBuffers)
         std::fill (buffer.begin(), buffer.end(), 0.0f);
     toneState = { 0.0f, 0.0f };
+    hpState = { 0.0f, 0.0f };
+    for (auto& s : smooth)
+    {
+        s.reset (activeSampleRate, 0.02);
+    }
+    // Snap to the current parameter values so the very first block does not ramp from zero.
+    smooth[0].setCurrentAndTargetValue (percent (parameters, "zoom"));
+    smooth[1].setCurrentAndTargetValue (percent (parameters, "spread"));
+    smooth[2].setCurrentAndTargetValue (percent (parameters, "distance"));
+    smooth[3].setCurrentAndTargetValue (percent (parameters, "motion"));
+    smooth[4].setCurrentAndTargetValue (percent (parameters, "mix"));
+    smooth[5].setCurrentAndTargetValue (juce::jlimit (0.0f, 0.85f, percent (parameters, "feedback")));
+    smooth[6].setCurrentAndTargetValue (percent (parameters, "tone"));
     writePosition = 0;
     lfoPhase = 0.0;
+    lfoPhase2 = 0.0;
     reverb.reset();
 }
 
@@ -107,6 +127,11 @@ float DATelescopeAudioProcessor::readDelay (int channel, float delaySamples) con
            + ring[static_cast<size_t> (second)] * frac;
 }
 
+float DATelescopeAudioProcessor::onePoler (int channel, float input, float coefficient) noexcept
+{
+    return onePolerImpl (hpState[static_cast<size_t> (channel)], input, coefficient);
+}
+
 void DATelescopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -115,28 +140,46 @@ void DATelescopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     if (numChannels == 0 || sampleCount == 0) return;
     if (delayBuffers[0].empty() || wetScratch.getNumSamples() == 0) return;
 
-    const float zoom = percent (parameters, "zoom");
-    const float spread = percent (parameters, "spread");
-    const float distance = percent (parameters, "distance");
-    const float motion = percent (parameters, "motion");
-    const float mix = percent (parameters, "mix");
-    const float feedback = juce::jlimit (0.0f, 0.85f, percent (parameters, "feedback"));
-    const float tone = percent (parameters, "tone");
+    // ---- Smooth the control parameters so preset changes and automation never click. ----
+    smooth[0].setTargetValue (percent (parameters, "zoom"));
+    smooth[1].setTargetValue (percent (parameters, "spread"));
+    smooth[2].setTargetValue (percent (parameters, "distance"));
+    smooth[3].setTargetValue (percent (parameters, "motion"));
+    smooth[4].setTargetValue (percent (parameters, "mix"));
+    smooth[5].setTargetValue (juce::jlimit (0.0f, 0.85f, percent (parameters, "feedback")));
+    smooth[6].setTargetValue (percent (parameters, "tone"));
+
+    const float zoom = smooth[0].getCurrentValue();
+    const float spread = smooth[1].getCurrentValue();
+    const float distance = smooth[2].getCurrentValue();
+    const float motion = smooth[3].getCurrentValue();
+    const float mix = smooth[4].getCurrentValue();
+    const float feedback = smooth[5].getCurrentValue();
+    const float tone = smooth[6].getCurrentValue();
     const int mode = choice (parameters, "mode");
     const int zoomProfile = choice (parameters, "zoomProfile");
     const int spreadProfile = choice (parameters, "spreadProfile");
     const int distanceProfile = choice (parameters, "distanceProfile");
     const int motionProfile = choice (parameters, "motionProfile");
 
+    // ---- Time / filter / spatial coefficients derived from the parameters. ----
     const float distanceFactor = distance * (distanceProfile == 2 ? 1.25f : distanceProfile == 0 ? 0.65f : 1.0f);
     const float zoomFactor = zoom * (zoomProfile == 2 ? 1.3f : zoomProfile == 0 ? 0.7f : 1.0f);
     float delaySec = 0.045f + 0.22f * zoomFactor + 0.33f * distanceFactor;
     if (mode == 2) delaySec *= 0.62f;
     if (mode == 3) delaySec *= 0.30f;
     if (mode == 4) delaySec *= 1.12f;
+
+    // Two independent LFOs drive the ping-pong taps for a rich, moving echo field.
     const float modulationDepth = motion * (motionProfile == 0 ? 0.0f : motionProfile == 2 ? 1.45f : 0.80f);
     const double lfoHz = (mode == 1 ? 0.15 : 0.07) + 2.8 * motion * motion;
-    const float filterCoefficient = 0.008f + 0.45f * tone * tone;
+    const double lfo2Hz = lfoHz * 1.7 + 0.05;
+
+    // Tone: one-pole low-pass on the delay readback (0 = dark, 1 = bright).
+    const float filterCoefficient = 0.006f + 0.55f * tone * tone;
+    // A gentle high-pass on the wet signal keeps low-end clean for wide presets.
+    const float hpCoefficient = 0.10f + 0.55f * tone;
+
     float stereoWidth = 0.30f + 1.8f * spread;
     if (spreadProfile == 0) stereoWidth = 0.0f;
     if (spreadProfile == 1) stereoWidth = std::min (1.2f, stereoWidth);
@@ -160,29 +203,46 @@ void DATelescopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         float* wetR = wetScratch.getWritePointer (1);
         const float* inputL = buffer.getReadPointer (0, start);
         const float* inputR = buffer.getReadPointer (numChannels > 1 ? 1 : 0, start);
+
         for (int i = 0; i < count; ++i)
         {
             const float inL = inputL[i];
             const float inR = inputR[i];
             maxInput = std::max (maxInput, std::max (std::abs (inL), std::abs (inR)));
+
             const float sine = static_cast<float> (std::sin (lfoPhase));
             const float cosine = static_cast<float> (std::cos (lfoPhase));
+            const float sine2 = static_cast<float> (std::sin (lfoPhase2));
+            const float cosine2 = static_cast<float> (std::cos (lfoPhase2));
+
+            // Modulated, slightly different delay times for each tap -> spatial smear.
             const float wobble = (mode == 2 ? 0.023f : mode == 3 ? 0.009f : 0.006f) * modulationDepth;
             const float base = delaySec * static_cast<float> (activeSampleRate);
             const float offsetL = juce::jlimit (2.0f, static_cast<float> (delayBufferLength - 2),
                                                base + wobble * static_cast<float> (activeSampleRate) * sine);
             const float offsetR = juce::jlimit (2.0f, static_cast<float> (delayBufferLength - 2),
                                                base * 1.071f + wobble * static_cast<float> (activeSampleRate) * cosine);
-            const float echoL = readDelay (0, offsetL);
-            const float echoR = readDelay (1, offsetR);
+            const float offsetL2 = juce::jlimit (2.0f, static_cast<float> (delayBufferLength - 2),
+                                                base * 0.53f + wobble * static_cast<float> (activeSampleRate) * sine2);
+            const float offsetR2 = juce::jlimit (2.0f, static_cast<float> (delayBufferLength - 2),
+                                                base * 0.58f + wobble * static_cast<float> (activeSampleRate) * cosine2);
+
+            // Ping-pong: each tap reads the *other* channel's delay line, then
+            // feedback is written back cross-coupled. This yields a true bouncing
+            // stereo echo instead of two independent mono delays.
+            const float echoL  = readDelay (0, offsetL)  * 0.62f + readDelay (1, offsetR2) * 0.38f;
+            const float echoR  = readDelay (1, offsetR)  * 0.62f + readDelay (0, offsetL2) * 0.38f;
             toneState[0] += filterCoefficient * (echoL - toneState[0]);
             toneState[1] += filterCoefficient * (echoR - toneState[1]);
-            delayBuffers[0][static_cast<size_t> (writePosition)] = inL + toneState[0] * feedback;
-            delayBuffers[1][static_cast<size_t> (writePosition)] = inR + toneState[1] * feedback;
+
+            // Write cross-coupled: left tap fed by right echo, right tap by left echo.
+            delayBuffers[0][static_cast<size_t> (writePosition)] = inL + (echoR * feedback);
+            delayBuffers[1][static_cast<size_t> (writePosition)] = inR + (echoL * feedback);
             if (++writePosition >= delayBufferLength) writePosition = 0;
 
-            float left = 0.72f * toneState[0] + 0.28f * inL;
-            float right = 0.72f * toneState[1] + 0.28f * inR;
+            // Filtered, mode-shaped wet signal.
+            float left  = onePoler (0, 0.72f * toneState[0] + 0.28f * inL, hpCoefficient);
+            float right = onePoler (1, 0.72f * toneState[1] + 0.28f * inR, hpCoefficient);
             if (mode == 1) // Orbit: rotating wet-field pan.
             {
                 const float leftGain = 0.65f + 0.35f * sine;
@@ -201,24 +261,27 @@ void DATelescopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             }
             wetL[i] = left;
             wetR[i] = right;
-            lfoPhase += twoPi * lfoHz / activeSampleRate;
-            if (lfoPhase >= twoPi) lfoPhase -= twoPi;
+            lfoPhase  += twoPi * lfoHz  / activeSampleRate;
+            lfoPhase2 += twoPi * lfo2Hz / activeSampleRate;
+            if (lfoPhase  >= twoPi) lfoPhase  -= twoPi;
+            if (lfoPhase2 >= twoPi) lfoPhase2 -= twoPi;
         }
 
         reverb.processStereo (wetL, wetR, count);
         for (int i = 0; i < count; ++i)
         {
-            float mid = 0.5f * (wetL[i] + wetR[i]);
+            // Mid/side stereo widening on the reverb return.
+            float mid  = 0.5f * (wetL[i] + wetR[i]);
             float side = 0.5f * (wetL[i] - wetR[i]) * stereoWidth;
-            const float wetLeft = mid + side;
+            const float wetLeft  = mid + side;
             const float wetRight = mid - side;
-            const float dryLeft = buffer.getSample (0, start + i);
+            const float dryLeft  = buffer.getSample (0, start + i);
             const float dryRight = buffer.getSample (numChannels > 1 ? 1 : 0, start + i);
-            // Mild soft clipping limits peaks created by very wide presets.
             const float summedL = dryLeft * (1.0f - mix) + wetLeft * mix;
             const float summedR = dryRight * (1.0f - mix) + wetRight * mix;
-            const float outL = mix <= 0.0001f ? dryLeft : (std::abs (summedL) > 1.0f ? std::tanh (summedL) : summedL);
-            const float outR = mix <= 0.0001f ? dryRight : (std::abs (summedR) > 1.0f ? std::tanh (summedR) : summedR);
+            // Soft saturation limits peaks created by very wide / feedback-heavy presets.
+            const float outL = mix <= 0.0001f ? dryLeft : std::tanh (summedL * 1.05f);
+            const float outR = mix <= 0.0001f ? dryRight : std::tanh (summedR * 1.05f);
             buffer.setSample (0, start + i, outL);
             if (numChannels > 1) buffer.setSample (1, start + i, outR);
             maxOutput = std::max (maxOutput, std::max (std::abs (outL), std::abs (outR)));

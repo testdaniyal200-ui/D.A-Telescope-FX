@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include <array>
+#include <functional>
 #include <memory>
 
 class NeonKnob final : public juce::Slider
@@ -33,6 +34,40 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttach, feedbackAttach, toneAttach;
 };
 
+// A dedicated, in-theme preset browser page shown as an overlay. It lists all
+// factory presets grouped by category with click-to-load and scrolling.
+class DAPresetBrowser final : public juce::Component
+{
+public:
+    explicit DAPresetBrowser (DATelescopeAudioProcessor& proc);
+    void paint (juce::Graphics&) override;
+    void resized() override;
+    void mouseDown (const juce::MouseEvent&) override;
+    void mouseDrag (const juce::MouseEvent&) override;
+    void mouseUp (const juce::MouseEvent&) override;
+    void mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
+    void setCategory (int cat);          // 0 = all, 1..10 = category
+    int  getCategory() const { return category; }
+    void setScroll (int px);
+    int  getScroll() const { return scrollPx; }
+    void setSelected (int index);        // highlight a preset index
+    void setScale (float s, float ox, float oy); // base-coord transform from the editor
+    std::function<void (int)> onSelect;  // preset index picked
+    std::function<void ()> onClose;      // back button pressed
+private:
+    static constexpr int cols = 5;
+    juce::Rectangle<float> cardRect (int index) const;
+    int category = 0;
+    int scrollPx = 0;
+    bool dragging = false;
+    int dragStartY = 0;
+    int dragStartScroll = 0;
+    float scale = 1.0f, offsetX = 0.0f, offsetY = 0.0f;
+    int contentHeight() const;
+    DATelescopeAudioProcessor& processor;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DAPresetBrowser)
+};
+
 class DATelescopeAudioProcessorEditor final : public juce::AudioProcessorEditor,
                                                private juce::Timer
 {
@@ -51,6 +86,8 @@ private:
     juce::Point<float> baseCoords (const juce::Point<float>& screen) const;
     void chooseProgram (int index);
     void showPresetMenu();
+    void openPresetBrowser();
+    void closePresetBrowser();
     void setChoice (const char* id, int index);
     void paintText (juce::Graphics&, const juce::String&, float x, float y,
                     float w, float h, float pointSize, juce::Colour, bool centre = true);
@@ -68,6 +105,7 @@ private:
     NeonKnob zoomKnob, spreadKnob, distanceKnob, motionKnob;
     std::array<std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>, 4> knobAttachments;
     DASettingsPanel settings;
+    DAPresetBrowser presetBrowser;
     int lastProgram = -1;
 
     // Uniform scale + letterbox offset, computed in resized().

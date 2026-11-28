@@ -84,6 +84,17 @@ void drawGearIcon (juce::Graphics& g, juce::Rectangle<float> r, juce::Colour col
     g.setColour (juce::Colour (0xff14121c)); // matches the header pill background
     g.fillEllipse (cx, cy, inner * 0.84f, inner * 0.84f);
 }
+
+// Shared text helper usable by both the editor and the preset browser.
+void paintTextFitted (juce::Graphics& g, const juce::String& txt, float x, float y,
+                      float w, float h, float size, juce::Colour colour, bool centre)
+{
+    g.setColour (colour);
+    g.setFont (juce::Font (juce::FontOptions (size)));
+    g.drawFittedText (txt, juce::Rectangle<int> (juce::roundToInt (x), juce::roundToInt (y),
+                       juce::roundToInt (w), juce::roundToInt (h)),
+                      centre ? juce::Justification::centred : juce::Justification::centredLeft, 1);
+}
 }
 
 void NeonKnob::paint (juce::Graphics& g)
@@ -92,11 +103,7 @@ void NeonKnob::paint (juce::Graphics& g)
     const auto center = square.getCentre();
     const float value = static_cast<float> ((getValue() - getMinimum()) / (getMaximum() - getMinimum()));
 
-    // Rotate the knob picture with the value so its engraved indicator line
-    // sweeps along the arc exactly like a real rotary control.
-    g.saveState();
-    g.addTransform (juce::AffineTransform::rotation (value * juce::MathConstants<float>::pi * 1.54f,
-                                                     center.x, center.y));
+    // Static knob texture (the dark band is part of the source artwork).
     if (picture.isValid())
         g.drawImageWithin (picture, static_cast<int> (square.getX()), static_cast<int> (square.getY()),
                            static_cast<int> (square.getWidth()), static_cast<int> (square.getHeight()),
@@ -106,11 +113,13 @@ void NeonKnob::paint (juce::Graphics& g)
         g.setColour (juce::Colours::black);
         g.fillEllipse (square);
     }
-    g.restoreState();
 
+    // The progress arc and its marker line are the moving indicator; they are
+    // driven directly by the value so the line always tracks the knob position.
     const float radius = 0.419f * std::min (getWidth(), getHeight());
     const float startAngle = juce::MathConstants<float>::pi * 1.23f;
-    const float finalAngle = startAngle + value * juce::MathConstants<float>::pi * 1.54f;
+    const float sweep = juce::MathConstants<float>::pi * 1.54f;
+    const float finalAngle = startAngle + value * sweep;
     juce::Path progress;
     progress.addCentredArc (center.x, center.y, radius, radius, 0.0f,
                            startAngle, finalAngle, true);
@@ -118,13 +127,23 @@ void NeonKnob::paint (juce::Graphics& g)
     g.strokePath (progress, juce::PathStrokeType (4.0f));
     g.setColour (neon);
     g.strokePath (progress, juce::PathStrokeType (1.7f));
+
+    // Full track for context.
+    juce::Path track;
+    track.addCentredArc (center.x, center.y, radius, radius, 0.0f,
+                         startAngle, startAngle + sweep, false);
+    g.setColour (juce::Colour (0x33ffffff));
+    g.strokePath (track, juce::PathStrokeType (1.0f));
+
+    // Marker line exactly along the arc-end radial. Angle 0 points east and
+    // positive angles rotate clockwise on screen (y-down), matching addCentredArc.
     const float markerRadius = radius * 0.71f;
-    // Point exactly along the arc-end radial, using the same angle convention as addCentredArc:
-    // angle 0 points east and positive angles rotate clockwise on screen (y-down).
     const auto dx = std::cos (finalAngle), dy = std::sin (finalAngle);
-    g.setColour (juce::Colours::white.withAlpha (0.9f));
+    g.setColour (juce::Colours::white.withAlpha (0.95f));
     g.drawLine (center.x + dx * (markerRadius - 7.0f), center.y + dy * (markerRadius - 7.0f),
-                center.x + dx * (markerRadius + 5.0f), center.y + dy * (markerRadius + 5.0f), 2.0f);
+                center.x + dx * (markerRadius + 6.0f), center.y + dy * (markerRadius + 6.0f), 2.2f);
+    g.setColour (neon);
+    g.fillEllipse (center.x + dx * markerRadius, center.y + dy * markerRadius, 4.0f, 4.0f);
 }
 
 DASettingsPanel::DASettingsPanel (juce::AudioProcessorValueTreeState& parameters)
@@ -175,6 +194,203 @@ void DASettingsPanel::resized()
     row (toneLabel, toneSlider, 160);
 }
 
+namespace
+{
+// Preset categories in display order; index 0 is the "ALL" entry.
+const std::array<const char*, 10> presetCategories {
+    "NEBULA", "ORBIT", "WARP", "DEEP SPACE", "DIMENSION",
+    "ATMOSPHERE", "VOCAL", "RHYTHM", "GUITAR", "CINEMA"
+};
+int categoryOfPreset (const juce::String& name)
+{
+    for (int c = 0; c < 10; ++c)
+        if (name.startsWithIgnoreCase (presetCategories[static_cast<size_t> (c)]))
+            return c + 1;
+    return 0;
+}
+juce::String categoryLabelFor (const juce::String& name)
+{
+    const int c = categoryOfPreset (name);
+    if (c == 0) return juce::String ("MISC");
+    return juce::String (presetCategories[static_cast<size_t> (c - 1)]);
+}
+}
+
+DAPresetBrowser::DAPresetBrowser (DATelescopeAudioProcessor& proc) : processor (proc)
+{
+    setOpaque (true);
+}
+
+void DAPresetBrowser::setScale (float s, float ox, float oy)
+{
+    scale = s; offsetX = ox; offsetY = oy;
+}
+
+int DAPresetBrowser::contentHeight() const
+{
+    int count = 0;
+    const int total = processor.getNumPrograms();
+    if (category == 0) count = total;
+    else
+        for (int i = 0; i < total; ++i)
+            if (categoryOfPreset (processor.getProgramName (i)) == category) ++count;
+    const int rows = (count + cols - 1) / cols;
+    return rows * 86 + 16;
+}
+
+juce::Rectangle<float> DAPresetBrowser::cardRect (int index) const
+{
+    const int row = index / cols;
+    const int col = index % cols;
+    const float x = 70.0f + col * 257.0f;
+    const float y = 196.0f + row * 86.0f;
+    return { x, y, 245.0f, 74.0f };
+}
+
+void DAPresetBrowser::setCategory (int cat) { category = juce::jlimit (0, 10, cat); scrollPx = 0; repaint(); }
+
+void DAPresetBrowser::setScroll (int px)
+{
+    const int maxScroll = std::max (0, contentHeight() - static_cast<int> (getHeight()) + 24);
+    scrollPx = juce::jlimit (0, maxScroll, px);
+    repaint();
+}
+
+void DAPresetBrowser::setSelected (int index)
+{
+    (void) index; // selection is reflected by highlighting the current program in paint()
+}
+
+void DAPresetBrowser::paint (juce::Graphics& g)
+{
+    // Draw in base coordinates using the editor's uniform transform.
+    g.saveState();
+    g.addTransform (juce::AffineTransform::scale (scale, scale).translated (offsetX, offsetY));
+
+    const auto bounds = juce::Rectangle<float> (45.0f, 44.0f, 1350.0f, 723.0f);
+    g.setColour (juce::Colour (0xee050510));
+    g.fillRoundedRectangle (bounds, 26.0f);
+    g.setColour (neon.withAlpha (0.72f));
+    g.drawRoundedRectangle (bounds.reduced (1), 26.0f, 1.6f);
+
+    // Title and back button.
+    paintTextFitted (g, "PRESET BROWSER", 70.0f, 74.0f, 500.0f, 30.0f, 18.0f, ivory, false);
+    const auto backBox = juce::Rectangle<float> (1240.0f, 68.0f, 130.0f, 40.0f);
+    g.setColour (juce::Colour (0xdd080910));
+    g.fillRoundedRectangle (backBox, 20.0f);
+    g.setColour (neon.withAlpha (0.72f));
+    g.drawRoundedRectangle (backBox.reduced (1), 20.0f, 1.2f);
+    drawChevron (g, { backBox.getX() + 24.0f, backBox.getY() + 8.0f, 18.0f, 24.0f }, true, ivory);
+    paintTextFitted (g, "BACK", backBox.getX() + 50.0f, backBox.getY() + 10.0f, 70.0f, 22.0f, 12.0f, ivory, false);
+
+    // Category tabs.
+    const int totalCats = 11;
+    const float tabW = 118.0f, tabH = 34.0f, tabGap = 8.0f;
+    const float tabX0 = 70.0f, tabY = 122.0f;
+    for (int c = 0; c < totalCats; ++c)
+    {
+        const auto r = juce::Rectangle<float> (tabX0 + c * (tabW + tabGap), tabY, tabW, tabH);
+        const bool active = (c == category);
+        g.setColour (active ? juce::Colour (0xff271137) : juce::Colour (0xdd080910));
+        g.fillRoundedRectangle (r, 16.0f);
+        g.setColour (active ? neon : juce::Colour (0xff5e536d));
+        g.drawRoundedRectangle (r.reduced (0.8f), 16.0f, active ? 2.0f : 1.0f);
+        const juce::String label = (c == 0 ? juce::String ("ALL")
+                                            : juce::String (presetCategories[static_cast<size_t> (c - 1)]));
+        paintTextFitted (g, label, r.getX(), r.getY() + 7.0f, tabW, 22.0f, 11.0f,
+                   active ? ivory : muted, false);
+    }
+
+    // Clip to the grid area so cards scroll within bounds.
+    const auto gridArea = juce::Rectangle<float> (62.0f, 170.0f, 1276.0f, 560.0f);
+    g.saveState();
+    juce::Path gridPath; gridPath.addRectangle (gridArea);
+    g.reduceClipRegion (gridPath);
+    g.addTransform (juce::AffineTransform::translation (0.0f, -static_cast<float> (scrollPx)));
+
+    const int total = processor.getNumPrograms();
+    int shown = 0;
+    for (int i = 0; i < total; ++i)
+    {
+        if (category != 0 && categoryOfPreset (processor.getProgramName (i)) != category) continue;
+        const auto r = cardRect (shown);
+        const bool current = (i == processor.currentProgram.load());
+        g.setColour (current ? juce::Colour (0xff271137) : juce::Colour (0xd2080712));
+        g.fillRoundedRectangle (r, 14.0f);
+        g.setColour (current ? neon : juce::Colour (0x555c4c71));
+        g.drawRoundedRectangle (r.reduced (0.8f), 14.0f, current ? 2.0f : 1.0f);
+        paintTextFitted (g, juce::String (i + 1).paddedLeft (3, '0') + "  " + processor.getProgramName (i),
+                   r.getX() + 16.0f, r.getY() + 12.0f, r.getWidth() - 32.0f, 26.0f, 13.0f,
+                   current ? ivory : juce::Colour (0xffd8cee8), false);
+        paintTextFitted (g, categoryLabelFor (processor.getProgramName (i)),
+                   r.getX() + 16.0f, r.getY() + 42.0f, r.getWidth() - 32.0f, 22.0f, 10.0f, muted, false);
+        ++shown;
+    }
+    g.restoreState();
+    g.restoreState();
+}
+
+void DAPresetBrowser::resized()
+{
+}
+
+void DAPresetBrowser::mouseDown (const juce::MouseEvent& e)
+{
+    const auto base = (e.getPosition().toFloat() - juce::Point<float> (offsetX, offsetY)) / scale;
+
+    // Back button.
+    const auto backBox = juce::Rectangle<float> (1240.0f, 68.0f, 130.0f, 40.0f);
+    if (backBox.contains (base)) { if (onClose) onClose(); return; }
+
+    // Category tabs.
+    const int totalCats = 11;
+    const float tabW = 118.0f, tabH = 34.0f, tabGap = 8.0f;
+    const float tabX0 = 70.0f, tabY = 122.0f;
+    if (base.y >= tabY && base.y < tabY + tabH)
+    {
+        const int c = static_cast<int> ((base.x - tabX0) / (tabW + tabGap));
+        if (c >= 0 && c < totalCats) { setCategory (c); return; }
+    }
+
+    // Preset cards (account for scroll offset).
+    const float y = base.y + static_cast<float> (scrollPx);
+    int shown = 0;
+    const int total = processor.getNumPrograms();
+    for (int i = 0; i < total; ++i)
+    {
+        if (category != 0 && categoryOfPreset (processor.getProgramName (i)) != category) continue;
+        const auto r = cardRect (shown);
+        if (r.contains (juce::Point<float> (base.x, y)))
+        {
+            if (onSelect) onSelect (i);
+            return;
+        }
+        ++shown;
+    }
+
+    // Otherwise start a vertical drag to scroll the grid.
+    dragging = true;
+    dragStartY = e.getPosition().y;
+    dragStartScroll = scrollPx;
+}
+
+void DAPresetBrowser::mouseDrag (const juce::MouseEvent& e)
+{
+    if (! dragging) return;
+    const auto dy = e.getPosition().y - dragStartY;
+    setScroll (dragStartScroll - static_cast<int> (dy));
+}
+
+void DAPresetBrowser::mouseUp (const juce::MouseEvent&)
+{
+    dragging = false;
+}
+
+void DAPresetBrowser::mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails& wheel)
+{
+    setScroll (scrollPx + static_cast<int> (wheel.deltaY) * 46);
+}
+
 DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAudioProcessor& p)
     : juce::AudioProcessorEditor (&p),
       processor (p),
@@ -182,7 +398,8 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
       knobImage (loadEmbedded (BinaryData::knob_png, BinaryData::knob_pngSize)),
       galaxyImage (loadEmbedded (BinaryData::galaxy_png, BinaryData::galaxy_pngSize)),
       zoomKnob (knobImage), spreadKnob (knobImage), distanceKnob (knobImage), motionKnob (knobImage),
-      settings (p.parameters)
+      settings (p.parameters),
+      presetBrowser (p)
 {
     const std::array<const char*, 4> ids { "zoom", "spread", "distance", "motion" };
     const std::array<NeonKnob*, 4> knobs { &zoomKnob, &spreadKnob, &distanceKnob, &motionKnob };
@@ -191,10 +408,18 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
         addAndMakeVisible (*knobs[i]);
         knobAttachments[i] = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>
             (p.parameters, ids[i], *knobs[i]);
-        knobs[i]->setTooltip (juce::String (ids[i]) + " — drag to adjust, double-click to reset");
+        knobs[i]->setTooltip (juce::String (ids[i]) + " - drag to adjust, double-click to reset");
         knobs[i]->setDoubleClickReturnValue (true, i == 0 ? 72.0 : i == 1 ? 58.0 : i == 2 ? 63.0 : 41.0);
     }
     addChildComponent (settings);
+    addChildComponent (presetBrowser);
+    presetBrowser.setVisible (false);
+    presetBrowser.onSelect = [this] (int idx)
+    {
+        chooseProgram (idx);
+        closePresetBrowser();
+    };
+    presetBrowser.onClose = [this] { closePresetBrowser(); };
     setResizable (true, true);
     setResizeLimits (960, 540, 1920, 1080);
     setSize (1440, 810);
@@ -221,17 +446,32 @@ void DATelescopeAudioProcessorEditor::resized()
                                                    juce::roundToInt (areas[i].size * contentScale)));
     settings.setBounds (juce::roundToInt (scaledX (1094)), juce::roundToInt (scaledY (105)),
                         juce::roundToInt (320.0f * contentScale), juce::roundToInt (238.0f * contentScale));
+
+    // The preset browser overlays the whole window; it draws in base
+    // coordinates using the same uniform transform as the main paint().
+    presetBrowser.setBounds (0, 0, getWidth(), getHeight());
+    presetBrowser.setScale (contentScale, contentOffsetX, contentOffsetY);
+}
+
+void DATelescopeAudioProcessorEditor::openPresetBrowser()
+{
+    presetBrowser.setVisible (true);
+    presetBrowser.setCategory (0);
+    presetBrowser.toFront (true);
+    repaint();
+}
+
+void DATelescopeAudioProcessorEditor::closePresetBrowser()
+{
+    presetBrowser.setVisible (false);
+    repaint();
 }
 
 void DATelescopeAudioProcessorEditor::paintText (juce::Graphics& g, const juce::String& txt,
                                                    float x, float y, float w, float h, float size,
                                                    juce::Colour colour, bool centre)
 {
-    g.setColour (colour);
-    g.setFont (juce::Font (juce::FontOptions (size)));
-    g.drawFittedText (txt, juce::Rectangle<int> (juce::roundToInt (x), juce::roundToInt (y),
-                       juce::roundToInt (w), juce::roundToInt (h)),
-                      centre ? juce::Justification::centred : juce::Justification::centredLeft, 1);
+    paintTextFitted (g, txt, x, y, w, h, size, colour, centre);
 }
 
 int DATelescopeAudioProcessorEditor::valueAsInt (const char* id) const
@@ -332,8 +572,13 @@ void DATelescopeAudioProcessorEditor::paint (juce::Graphics& g)
     drawMenuIcon (g, {1296.0f, 70.0f, 37.0f, 31.0f}, ivory);
 
     paintText (g, "T E L E S C O P E   F X", 432, 127, 576, 51, 27, juce::Colour (0xffe5cbff));
-    paintText (g, "S P A C E    •    M O T I O N    •    D I M E N S I O N",
-               474, 173, 495, 23, 11, muted);
+    // Draw the separator dots as vector circles (not font glyphs) to avoid tofu boxes.
+    paintText (g, "S P A C E", 474, 173, 150, 23, 11, muted);
+    paintText (g, "M O T I O N", 640, 173, 150, 23, 11, muted);
+    paintText (g, "D I M E N S I O N", 806, 173, 163, 23, 11, muted);
+    g.setColour (neon.withAlpha (0.8f));
+    g.fillEllipse (628.0f, 184.0f, 3.0f, 3.0f);
+    g.fillEllipse (794.0f, 184.0f, 3.0f, 3.0f);
 
     // Starry central window. The nebula drifts and wobbles at a rate driven by
     // the incoming signal level, so the stars keep moving with the audio.
@@ -469,7 +714,7 @@ void DATelescopeAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
         if (x >= 843 && x <= 901) { chooseProgram (processor.currentProgram.load() + 1); return; }
         if (x >= 596 && x <= 941) { showPresetMenu(); return; }
         if (x >= 1220 && x <= 1290) { settings.setVisible (! settings.isVisible()); return; }
-        if (x >= 1290 && x <= 1360) { showPresetMenu(); return; }
+        if (x >= 1290 && x <= 1360) { openPresetBrowser(); return; }
     }
     if (y >= 709 && y <= 755 && x >= 355 && x <= 1090)
     {

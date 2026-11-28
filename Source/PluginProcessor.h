@@ -42,14 +42,20 @@ private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     float readDelay (int channel, float delaySamples) const noexcept;
     void resetEffects();
+    float onePoler (int channel, float input, float coefficient) noexcept;
 
+    // Ping-pong delay taps (cross-coupled) for a true spatial echo.
     std::array<std::vector<float>, 2> delayBuffers;
     std::array<float, 2> toneState { 0.0f, 0.0f };
+    std::array<float, 2> hpState { 0.0f, 0.0f };
+    // Smoothed parameter values prevent clicks when presets/automation change.
+    std::array<juce::SmoothedValue<float>, 7> smooth;
     juce::AudioBuffer<float> wetScratch;
     juce::Reverb reverb;
     int writePosition = 0;
     int delayBufferLength = 1;
     double activeSampleRate = 44100.0;
     double lfoPhase = 0.0;
+    double lfoPhase2 = 0.0;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DATelescopeAudioProcessor)
 };

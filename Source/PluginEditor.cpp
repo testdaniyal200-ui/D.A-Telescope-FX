@@ -55,6 +55,20 @@ juce::Image loadEmbedded (const void* data, int length, float gain = 1.0f, float
     return brightenImage (juce::ImageCache::getFromMemory (data, length), gain, saturation);
 }
 
+// Embedded UI font (Poppins) so every label renders correctly regardless of the
+// host's installed fonts. Falling back to the platform default can yield empty
+// "tofu" boxes on machines where the default family is missing. Returned by
+// value so callers never hold a dangling reference.
+juce::Font getUiFont (float size)
+{
+    static const juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor (
+        static_cast<const void*> (BinaryData::Poppins_Regular_ttf),
+        static_cast<size_t> (BinaryData::Poppins_Regular_ttfSize));
+    if (typeface != nullptr)
+        return juce::Font (juce::FontOptions (typeface).withPointHeight (size));
+    return juce::Font (juce::FontOptions (size));
+}
+
 // Vector icons drawn instead of font glyphs (‹ › ▤ ⚙ ☰) so no platform font
 // dependency can render them as empty boxes.
 void drawChevron (juce::Graphics& g, juce::Rectangle<float> r, bool left, juce::Colour colour)
@@ -123,7 +137,7 @@ void paintTextFitted (juce::Graphics& g, const juce::String& txt, float x, float
                       float w, float h, float size, juce::Colour colour, bool centre)
 {
     g.setColour (colour);
-    g.setFont (juce::Font (juce::FontOptions (size)));
+    g.setFont (getUiFont (size));
     g.drawFittedText (txt, juce::Rectangle<int> (juce::roundToInt (x), juce::roundToInt (y),
                        juce::roundToInt (w), juce::roundToInt (h)),
                       centre ? juce::Justification::centred : juce::Justification::centredLeft, 1);
@@ -147,11 +161,14 @@ void NeonKnob::paint (juce::Graphics& g)
         g.fillEllipse (square);
     }
 
-    // The progress arc and its marker line are the moving indicator; they are
-    // driven directly by the value so the line always tracks the knob position.
+    // Progress arc + marker, driven directly by the value so the line always
+    // tracks the knob position. JUCE angles: 0 = east (3 o'clock), positive
+    // rotates clockwise on screen (y-down). The sweep starts at 7 o'clock
+    // (120° = 2π/3) for 0% and ends at 5 o'clock (60° = π/3) for 100%, going the
+    // long way round through 12 o'clock (300° total = 5π/3).
     const float radius = 0.419f * std::min (getWidth(), getHeight());
-    const float startAngle = juce::MathConstants<float>::pi * 1.23f;
-    const float sweep = juce::MathConstants<float>::pi * 1.54f;
+    const float startAngle = twoPi / 3.0f;             // 7 o'clock = 0%
+    const float sweep = twoPi * (5.0f / 6.0f);         // to 5 o'clock = 100%
     const float finalAngle = startAngle + value * sweep;
     juce::Path progress;
     progress.addCentredArc (center.x, center.y, radius, radius, 0.0f,
@@ -161,10 +178,10 @@ void NeonKnob::paint (juce::Graphics& g)
     g.setColour (neon);
     g.strokePath (progress, juce::PathStrokeType (1.7f));
 
-    // Full track for context.
+    // Full track for context (same 7-o'clock -> 5-o'clock arc).
     juce::Path track;
     track.addCentredArc (center.x, center.y, radius, radius, 0.0f,
-                         startAngle, startAngle + sweep, false);
+                         startAngle, startAngle + sweep, true);
     g.setColour (juce::Colour (0x33ffffff));
     g.strokePath (track, juce::PathStrokeType (1.0f));
 
@@ -186,7 +203,7 @@ DASettingsPanel::DASettingsPanel (juce::AudioProcessorValueTreeState& parameters
         addAndMakeVisible (label);
         label.setText (text, juce::dontSendNotification);
         label.setColour (juce::Label::textColourId, ivory);
-        label.setFont (juce::Font (juce::FontOptions (14.0f)));
+        label.setFont (getUiFont (14.0f));
         addAndMakeVisible (slider);
         slider.setSliderStyle (juce::Slider::LinearHorizontal);
         slider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 56, 25);
@@ -211,7 +228,7 @@ void DASettingsPanel::paint (juce::Graphics& g)
     g.setColour (neon.withAlpha (0.72f));
     g.drawRoundedRectangle (getLocalBounds().toFloat().reduced (1.0f), 15.0f, 1.25f);
     g.setColour (ivory);
-    g.setFont (juce::Font (juce::FontOptions (16.0f)).boldened());
+    g.setFont (getUiFont (16.0f).boldened());
     g.drawText ("ENGINE SETTINGS", 18, 11, getWidth() - 36, 24, juce::Justification::centredLeft);
 }
 
@@ -449,8 +466,10 @@ DATelescopeAudioProcessorEditor::DATelescopeAudioProcessorEditor (DATelescopeAud
     presetBrowser.setVisible (false);
     presetBrowser.onSelect = [this] (int idx)
     {
+        // Load the chosen preset but keep the browser open so the user stays on
+        // the preset page and sees the selected card highlighted; BACK closes it.
         chooseProgram (idx);
-        closePresetBrowser();
+        repaint();
     };
     presetBrowser.onClose = [this] { closePresetBrowser(); };
     setResizable (true, true);
